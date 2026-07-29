@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile — FreelanceHub</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .profile-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: var(--space-5);
+    padding: var(--space-6) 0 var(--space-7);
+    align-items: start;
+  }
+
+  /* ---- Left: profile card ---- */
+  .profile-sticky { position: sticky; top: 96px; }
+  .profile-card { padding: var(--space-5); text-align: center; }
+  .avatar-lg {
+    width: 88px; height: 88px; border-radius: 50%;
+    background: var(--amber); color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 2rem; font-weight: 600;
+    margin: 0 auto var(--space-3);
+  }
+  .profile-card h2 { font-family: var(--font-display); font-size: 1.3rem; margin-bottom: 4px; }
+  .profile-card .role-tag { font-family: var(--font-mono); font-size: 0.8rem; color: var(--slate); margin-bottom: var(--space-3); }
+  .profile-rating { display: flex; justify-content: center; gap: 4px; align-items: center; margin-bottom: var(--space-4); font-family: var(--font-mono); font-size: 0.9rem; }
+  .profile-rating .stars { color: var(--amber-deep); }
+
+  .profile-stats-mini { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); padding: var(--space-4) 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: var(--space-4); }
+  .profile-stats-mini div { text-align: center; }
+  .profile-stats-mini .val { font-family: var(--font-display); font-size: 1.3rem; }
+  .profile-stats-mini .label { font-size: 0.72rem; color: var(--slate-light); text-transform: uppercase; }
+
+  .upload-btn { width: 100%; margin-bottom: var(--space-2); }
+
+  /* ---- Right: tabbed edit sections ---- */
+  .profile-tabs { display: flex; gap: var(--space-2); margin-bottom: var(--space-4); border-bottom: 1px solid var(--border); }
+  .profile-tab {
+    padding: 10px 4px; margin-right: var(--space-4);
+    font-size: 0.9rem; font-weight: 600; color: var(--slate-light);
+    border-bottom: 2px solid transparent;
+  }
+  .profile-tab.active { color: var(--ink); border-bottom-color: var(--amber); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .form-card { padding: var(--space-5); }
+  .form-card h3 { font-family: var(--font-display); font-size: 1.2rem; margin-bottom: var(--space-4); }
+  .form-group { margin-bottom: var(--space-4); }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: var(--space-2); }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%; padding: 11px 14px; border: 1.5px solid var(--border);
+    border-radius: var(--radius); font-size: 0.92rem; background: var(--paper-raised); font-family: inherit;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--amber-deep); }
+  .form-group textarea { resize: vertical; min-height: 100px; }
+  .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+
+  .skill-input-wrap { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--paper-raised); }
+  .skill-input-wrap input { border: none; flex: 1; min-width: 120px; padding: 4px; font-size: 0.9rem; }
+  .skill-input-wrap input:focus { outline: none; }
+  .skill-chip { display: flex; align-items: center; gap: 6px; background: rgba(232,163,61,0.12); color: var(--amber-deep); font-family: var(--font-mono); font-size: 0.8rem; padding: 4px 10px; border-radius: 4px; }
+  .skill-chip button { color: var(--amber-deep); font-weight: 700; font-size: 0.9rem; }
+
+  /* Portfolio grid */
+  .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin-bottom: var(--space-4); }
+  .portfolio-item { aspect-ratio: 4/3; border-radius: var(--radius); background: var(--ink); position: relative; overflow: hidden; display: flex; align-items: flex-end; }
+  .portfolio-item .overlay { background: linear-gradient(transparent, rgba(18,23,43,0.85)); width: 100%; padding: 10px; color: var(--paper); font-size: 0.8rem; }
+  .portfolio-add {
+    aspect-ratio: 4/3; border: 2px dashed var(--border); border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--slate-light); font-size: 1.8rem;
+  }
+
+  .form-actions { display: flex; justify-content: flex-end; gap: var(--space-3); margin-top: var(--space-5); }
+
+  @media (max-width: 900px) {
+    .profile-layout { grid-template-columns: 1fr; }
+    .profile-sticky { position: static; }
+    .form-2col { grid-template-columns: 1fr; }
+    .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
+    <ul class="nav-links">
+      <li><a href="freelancer-dashboard.html">Find Work</a></li>
+      <li><a href="messaging.html">Messages</a></li>
+      <li><a href="profile.html" class="active">Profile</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-ghost">Log Out</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="profile-layout">
+
+    <!-- Profile summary card -->
+    <div class="profile-sticky">
+      <div class="card profile-card">
+        <div class="avatar-lg">PN</div>
+        <h2>Priya Nair</h2>
+        <div class="role-tag">Freelancer · Product Designer</div>
+        <div class="profile-rating"><span class="stars">★★★★★</span> 4.9 (38 reviews)</div>
+
+        <div class="profile-stats-mini">
+          <div><div class="val">27</div><div class="label">Projects Done</div></div>
+          <div><div class="val">98%</div><div class="label">On-time</div></div>
+        </div>
+
+        <button class="btn btn-outline upload-btn btn-sm">Change Photo</button>
+        <button class="btn btn-primary btn-sm" style="width:100%;">View Public Profile</button>
+      </div>
+    </div>
+
+    <!-- Editable sections -->
+    <div>
+      <div class="profile-tabs" id="profileTabs">
+        <div class="profile-tab active" data-tab="basic">Basic Info</div>
+        <div class="profile-tab" data-tab="skills">Skills & Bio</div>
+        <div class="profile-tab" data-tab="portfolio">Portfolio</div>
+        <div class="profile-tab" data-tab="security">Account & Security</div>
+      </div>
+
+      <!-- Basic Info -->
+      <div class="tab-panel active" id="tab-basic">
+        <form class="card form-card">
+          <h3>Basic Information</h3>
+          <div class="form-2col">
+            <div class="form-group">
+              <label for="fullName">Full name</label>
+              <input type="text" id="fullName" value="Priya Nair">
+            </div>
+            <div class="form-group">
+              <label for="email">Email address</label>
+              <input type="email" id="email" value="priya.nair@example.com">
+            </div>
+          </div>
+          <div class="form-2col">
+            <div class="form-group">
+              <label for="location">Location</label>
+              <input type="text" id="location" value="Bengaluru, India">
+            </div>
+            <div class="form-group">
+              <label for="hourlyRate">Hourly rate ($)</label>
+              <input type="number" id="hourlyRate" value="35">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Skills & Bio -->
+      <div class="tab-panel" id="tab-skills">
+        <form class="card form-card">
+          <h3>Skills & Bio</h3>
+          <div class="form-group">
+            <label for="bio">About you</label>
+            <textarea id="bio">Product designer with 6 years of experience across fintech and SaaS. I focus on clean, accessible interfaces backed by research.</textarea>
+          </div>
+          <div class="form-group">
+            <label>Skills</label>
+            <div class="skill-input-wrap" id="profileSkillWrap">
+              <span class="skill-chip">Figma <button type="button">&times;</button></span>
+              <span class="skill-chip">UI/UX <button type="button">&times;</button></span>
+              <span class="skill-chip">Prototyping <button type="button">&times;</button></span>
+              <input type="text" id="profileSkillInput" placeholder="Add a skill and press Enter">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Portfolio -->
+      <div class="tab-panel" id="tab-portfolio">
+        <div class="card form-card">
+          <h3>Portfolio Showcase</h3>
+          <div class="portfolio-grid">
+            <div class="portfolio-item"><div class="overlay">Fintech Onboarding Flow</div></div>
+            <div class="portfolio-item"><div class="overlay">Booking App Redesign</div></div>
+            <div class="portfolio-item"><div class="overlay">SaaS Dashboard UI</div></div>
+            <div class="portfolio-add">+</div>
+          </div>
+          <p style="color:var(--slate); font-size:0.85rem;">Upload project samples so clients can see your past work before hiring.</p>
+        </div>
+      </div>
+
+      <!-- Account & Security -->
+      <div class="tab-panel" id="tab-security">
+        <form class="card form-card">
+          <h3>Account & Security</h3>
+          <div class="form-group">
+            <label for="currentPassword">Current password</label>
+            <input type="password" id="currentPassword" placeholder="••••••••">
+          </div>
+          <div class="form-2col">
+            <div class="form-group">
+              <label for="newPassword">New password</label>
+              <input type="password" id="newPassword" placeholder="At least 8 characters">
+            </div>
+            <div class="form-group">
+              <label for="confirmNewPassword">Confirm new password</label>
+              <input type="password" id="confirmNewPassword" placeholder="••••••••">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Update Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/profile.js"></script>
+</body>
+</html>

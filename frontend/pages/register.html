@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account — FreelanceHub</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .auth-wrap {
+    min-height: calc(100vh - 72px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .auth-side {
+    background: var(--ink);
+    color: var(--paper);
+    padding: var(--space-7) var(--space-6);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .auth-side .eyebrow { color: var(--amber); margin-bottom: var(--space-3); display:block; }
+  .auth-side h2 {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    line-height: 1.15;
+    margin-bottom: var(--space-4);
+    max-width: 380px;
+  }
+  .auth-side p { color: rgba(247,245,240,0.7); max-width: 360px; margin-bottom: var(--space-5); }
+
+  .side-checklist { display: flex; flex-direction: column; gap: var(--space-3); }
+  .side-check-item { display: flex; gap: 12px; align-items: flex-start; }
+  .side-check-item .dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(232,163,61,0.15);
+    color: var(--amber);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 0.75rem; flex-shrink: 0;
+  }
+  .side-check-item div h5 { font-size: 0.95rem; margin-bottom: 2px; }
+  .side-check-item div p { font-size: 0.82rem; color: rgba(247,245,240,0.6); margin: 0; max-width: none; }
+
+  .auth-form-side {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6) var(--space-4);
+  }
+  .auth-box { width: 100%; max-width: 420px; }
+  .auth-box .logo-mini { font-family: var(--font-display); font-size: 1.3rem; margin-bottom: var(--space-5); }
+  .auth-box .logo-mini span { color: var(--amber-deep); }
+  .auth-box h1 { font-family: var(--font-display); font-size: 1.8rem; margin-bottom: var(--space-2); }
+  .auth-box .subtext { color: var(--slate); font-size: 0.92rem; margin-bottom: var(--space-5); }
+
+  .form-group { margin-bottom: var(--space-4); }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: var(--space-2); color: var(--ink); }
+  .form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    background: var(--paper-raised);
+  }
+  .form-group input:focus { outline: none; border-color: var(--amber-deep); }
+  .form-group .hint { font-size: 0.78rem; color: var(--slate-light); margin-top: 6px; }
+  .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+
+  .role-select { display: flex; gap: 10px; margin-bottom: var(--space-4); }
+  .role-btn {
+    flex: 1;
+    padding: 12px 8px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--slate);
+    background: var(--paper-raised);
+  }
+  .role-btn.active { border-color: var(--amber-deep); color: var(--ink); background: rgba(232,163,61,0.1); }
+
+  .terms-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: var(--space-4); font-size: 0.85rem; color: var(--slate); }
+  .terms-row a { color: var(--amber-deep); font-weight: 600; }
+  .terms-row input { margin-top: 3px; }
+
+  .switch-auth { text-align: center; margin-top: var(--space-5); font-size: 0.9rem; color: var(--slate); }
+  .switch-auth a { color: var(--amber-deep); font-weight: 600; }
+
+  @media (max-width: 860px) {
+    .auth-wrap { grid-template-columns: 1fr; }
+    .auth-side { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
+    <ul class="nav-links">
+      <li><a href="project-posting.html">Find Talent</a></li>
+      <li><a href="freelancer-dashboard.html">Find Work</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-ghost">Log in</a>
+    </div>
+  </div>
+</nav>
+
+<div class="auth-wrap">
+  <div class="auth-side">
+    <span class="eyebrow">// Join the board</span>
+    <h2>Set up your account in under two minutes.</h2>
+    <div class="side-checklist">
+      <div class="side-check-item">
+        <div class="dot">1</div>
+        <div><h5>Choose your role</h5><p>Client, freelancer, or manage as admin.</p></div>
+      </div>
+      <div class="side-check-item">
+        <div class="dot">2</div>
+        <div><h5>Build your profile</h5><p>Add skills, portfolio, or your first brief.</p></div>
+      </div>
+      <div class="side-check-item">
+        <div class="dot">3</div>
+        <div><h5>Start matching</h5><p>Post work or submit your first proposal.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-form-side">
+    <div class="auth-box">
+      <div class="logo-mini">Freelance<span>Hub</span></div>
+      <h1>Create your account</h1>
+      <p class="subtext">Tell us who you are so we can set up the right dashboard.</p>
+
+      <div class="role-select" id="roleSelect">
+        <button class="role-btn active" data-role="client" type="button">I'm a Client</button>
+        <button class="role-btn" data-role="freelancer" type="button">I'm a Freelancer</button>
+      </div>
+
+      <form id="registerForm" novalidate>
+        <div class="form-2col">
+          <div class="form-group">
+            <label for="fname">Full name</label>
+            <input type="text" id="fname" name="fname" placeholder="Jordan Lee" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="At least 8 characters" required minlength="8">
+          <p class="hint">Use 8+ characters with a mix of letters and numbers.</p>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required minlength="8">
+        </div>
+
+        <label class="terms-row">
+          <input type="checkbox" required>
+          <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</span>
+        </label>
+
+        <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+      </form>
+
+      <p class="switch-auth">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/auth.js"></script>
+</body>
+</html>

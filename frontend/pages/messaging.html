@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Messages — FreelanceHub</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .msg-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    height: calc(100vh - 72px);
+  }
+
+  /* ---- Conversation list ---- */
+  .conv-list-panel {
+    background: var(--paper-raised);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+  }
+  .conv-search {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border);
+  }
+  .conv-search input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+  }
+  .conv-search input:focus { outline: none; border-color: var(--amber-deep); }
+
+  .conv-list { flex: 1; overflow-y: auto; }
+  .conv-item {
+    display: flex; gap: 12px;
+    padding: 14px var(--space-4);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.12s ease;
+  }
+  .conv-item:hover { background: rgba(232,163,61,0.06); }
+  .conv-item.active { background: rgba(232,163,61,0.1); border-left: 3px solid var(--amber); }
+  .conv-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--ink); color: var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 600; font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .conv-info { flex: 1; min-width: 0; }
+  .conv-top-row { display: flex; justify-content: space-between; align-items: baseline; }
+  .conv-info h4 { font-size: 0.92rem; }
+  .conv-time { font-size: 0.72rem; color: var(--slate-light); font-family: var(--font-mono); flex-shrink: 0; }
+  .conv-preview { font-size: 0.82rem; color: var(--slate); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .conv-project-tag { font-size: 0.7rem; color: var(--amber-deep); font-family: var(--font-mono); margin-top: 3px; }
+  .unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); flex-shrink: 0; margin-top: 6px; }
+
+  /* ---- Chat panel ---- */
+  .chat-panel { display: flex; flex-direction: column; background: var(--paper); }
+  .chat-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border);
+    background: var(--paper-raised);
+  }
+  .chat-header-info { display: flex; align-items: center; gap: 12px; }
+  .chat-header h3 { font-size: 1rem; }
+  .chat-header span { font-size: 0.78rem; color: var(--slate-light); font-family: var(--font-mono); }
+
+  .chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .day-divider { text-align: center; font-family: var(--font-mono); font-size: 0.72rem; color: var(--slate-light); margin: var(--space-2) 0; }
+
+  .msg-bubble { max-width: 60%; padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; line-height: 1.45; }
+  .msg-bubble.received { align-self: flex-start; background: var(--paper-raised); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
+  .msg-bubble.sent { align-self: flex-end; background: var(--ink); color: var(--paper); border-bottom-right-radius: 2px; }
+  .msg-time { display: block; font-family: var(--font-mono); font-size: 0.68rem; margin-top: 4px; opacity: 0.6; }
+
+  .msg-attachment {
+    align-self: flex-start;
+    max-width: 60%;
+    display: flex; align-items: center; gap: 10px;
+    background: var(--paper-raised);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+  }
+  .msg-attachment .file-icon { font-family: var(--font-mono); color: var(--amber-deep); font-weight: 700; }
+
+  .chat-input-bar {
+    display: flex; align-items: center; gap: 10px;
+    padding: var(--space-3) var(--space-4);
+    border-top: 1px solid var(--border);
+    background: var(--paper-raised);
+  }
+  .chat-input-bar input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    font-size: 0.9rem;
+  }
+  .chat-input-bar input:focus { outline: none; border-color: var(--amber-deep); }
+  .icon-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--slate); font-family: var(--font-mono); font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .icon-btn:hover { background: rgba(74,82,104,0.08); }
+  .send-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--amber); color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-weight: 700;
+  }
+  .send-btn:hover { background: var(--amber-deep); }
+
+  @media (max-width: 860px) {
+    .msg-layout { grid-template-columns: 1fr; }
+    .conv-list-panel { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
+    <ul class="nav-links">
+      <li><a href="freelancer-dashboard.html">Find Work</a></li>
+      <li><a href="messaging.html" class="active">Messages</a></li>
+      <li><a href="profile.html">Profile</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-ghost">Log Out</a>
+    </div>
+  </div>
+</nav>
+
+<div class="msg-layout">
+  <!-- Conversation list -->
+  <div class="conv-list-panel">
+    <div class="conv-search">
+      <input type="text" placeholder="Search conversations...">
+    </div>
+    <div class="conv-list" id="convList">
+      <div class="conv-item active" data-name="Marcus Thorne">
+        <div class="conv-avatar">MT</div>
+        <div class="conv-info">
+          <div class="conv-top-row"><h4>Marcus Thorne</h4><span class="conv-time">10m</span></div>
+          <p class="conv-preview">Sounds good — can you share the API docs?</p>
+          <span class="conv-project-tag">FastAPI backend project</span>
+        </div>
+      </div>
+      <div class="conv-item" data-name="Dana Kessler">
+        <div class="conv-avatar">DK</div>
+        <div class="conv-info">
+          <div class="conv-top-row"><h4>Dana Kessler</h4><span class="conv-time">2h</span></div>
+          <p class="conv-preview">The revised mockups look great, thank you!</p>
+          <span class="conv-project-tag">Fintech UI kit</span>
+        </div>
+        <div class="unread-dot"></div>
+      </div>
+      <div class="conv-item" data-name="NovaTech Inc.">
+        <div class="conv-avatar">NT</div>
+        <div class="conv-info">
+          <div class="conv-top-row"><h4>NovaTech Inc.</h4><span class="conv-time">1d</span></div>
+          <p class="conv-preview">We'd like to extend the deadline by a week.</p>
+          <span class="conv-project-tag">Blog series</span>
+        </div>
+      </div>
+      <div class="conv-item" data-name="Owen Reyes">
+        <div class="conv-avatar">OR</div>
+        <div class="conv-info">
+          <div class="conv-top-row"><h4>Owen Reyes</h4><span class="conv-time">2d</span></div>
+          <p class="conv-preview">Final files uploaded, let me know if all's good.</p>
+          <span class="conv-project-tag">Photo editing</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat panel -->
+  <div class="chat-panel">
+    <div class="chat-header">
+      <div class="chat-header-info">
+        <div class="conv-avatar" style="width:36px;height:36px;">MT</div>
+        <div>
+          <h3 id="chatName">Marcus Thorne</h3>
+          <span>Re: FastAPI backend project</span>
+        </div>
+      </div>
+      <a href="client-dashboard.html" class="btn btn-outline btn-sm">View Project</a>
+    </div>
+
+    <div class="chat-body" id="chatBody">
+      <div class="day-divider">Today</div>
+
+      <div class="msg-bubble received">
+        Hi! Thanks for your proposal — I liked your approach to the webhook sync.
+        <span class="msg-time">10:02 AM</span>
+      </div>
+      <div class="msg-bubble sent">
+        Thank you! Happy to walk through the architecture if useful before we start.
+        <span class="msg-time">10:05 AM</span>
+      </div>
+      <div class="msg-bubble received">
+        That'd be great. Also — do you have experience with calendar API integrations?
+        <span class="msg-time">10:07 AM</span>
+      </div>
+      <div class="msg-bubble sent">
+        Yes, built two similar integrations with Google Calendar API and Cal.com previously.
+        <span class="msg-time">10:09 AM</span>
+      </div>
+
+      <div class="msg-attachment">
+        <span class="file-icon">PDF</span>
+        <div>project-requirements-v2.pdf<br><span style="color:var(--slate-light); font-size:0.75rem;">248 KB</span></div>
+      </div>
+
+      <div class="msg-bubble received">
+        Sounds good — can you share the API docs?
+        <span class="msg-time">10:24 AM</span>
+      </div>
+    </div>
+
+    <div class="chat-input-bar">
+      <button class="icon-btn" title="Attach file">+</button>
+      <input type="text" id="msgInput" placeholder="Type a message...">
+      <button class="send-btn" id="sendBtn">→</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/messaging.js"></script>
+</body>
+</html>

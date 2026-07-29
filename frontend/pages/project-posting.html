@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post a Project — FreelanceHub</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .post-layout {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: var(--space-6);
+    padding: var(--space-6) 0 var(--space-7);
+    align-items: start;
+  }
+
+  .post-header { margin-bottom: var(--space-5); }
+  .post-header h1 { font-family: var(--font-display); font-size: 2rem; margin-bottom: 6px; }
+  .post-header p { color: var(--slate); }
+
+  /* ---- Step indicator ---- */
+  .steps { display: flex; gap: var(--space-3); margin-bottom: var(--space-5); }
+  .step {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 0.8rem; color: var(--slate-light);
+  }
+  .step .step-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+  }
+  .step.active { color: var(--ink); font-weight: 600; }
+  .step.active .step-dot { background: var(--amber); border-color: var(--amber); color: var(--ink); }
+  .step.done .step-dot { background: var(--green); border-color: var(--green); color: white; }
+
+  /* ---- Form card ---- */
+  .form-card { padding: var(--space-5); }
+  .form-group { margin-bottom: var(--space-4); }
+  .form-group label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: var(--space-2); }
+  .form-group .optional { font-weight: 400; color: var(--slate-light); font-size: 0.78rem; }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    background: var(--paper-raised);
+    font-family: inherit;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    outline: none; border-color: var(--amber-deep);
+  }
+  .form-group textarea { resize: vertical; min-height: 120px; }
+  .form-group .hint { font-size: 0.78rem; color: var(--slate-light); margin-top: 6px; }
+  .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+
+  /* ---- Skill tag input ---- */
+  .skill-input-wrap {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--paper-raised);
+  }
+  .skill-input-wrap input {
+    border: none; flex: 1; min-width: 120px; padding: 4px; font-size: 0.9rem;
+  }
+  .skill-input-wrap input:focus { outline: none; }
+  .skill-chip {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(232,163,61,0.12);
+    color: var(--amber-deep);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+  .skill-chip button { color: var(--amber-deep); font-weight: 700; font-size: 0.9rem; }
+
+  .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .category-btn {
+    padding: 12px 8px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--slate);
+    background: var(--paper-raised);
+  }
+  .category-btn.active { border-color: var(--amber-deep); background: rgba(232,163,61,0.1); color: var(--ink); }
+
+  .form-actions { display: flex; justify-content: flex-end; gap: var(--space-3); margin-top: var(--space-5); }
+
+  /* ---- Live preview ---- */
+  .preview-sticky { position: sticky; top: 96px; }
+  .preview-label { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; color: var(--slate-light); margin-bottom: var(--space-2); display: block; }
+  .preview-card { padding: var(--space-4); }
+  .preview-top { display: flex; justify-content: space-between; margin-bottom: var(--space-3); }
+  .preview-budget { font-family: var(--font-mono); font-weight: 600; color: var(--green); }
+  .preview-card h3 { font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 8px; min-height: 1.4em; }
+  .preview-card p { color: var(--slate); font-size: 0.9rem; margin-bottom: var(--space-3); min-height: 3em; }
+  .preview-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: var(--space-3); min-height: 26px; }
+  .preview-foot { font-family: var(--font-mono); font-size: 0.78rem; color: var(--slate-light); padding-top: var(--space-3); border-top: 1px dashed var(--border); }
+
+  @media (max-width: 900px) {
+    .post-layout { grid-template-columns: 1fr; }
+    .form-2col { grid-template-columns: 1fr; }
+    .category-grid { grid-template-columns: repeat(2, 1fr); }
+    .preview-sticky { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
+    <ul class="nav-links">
+      <li><a href="client-dashboard.html">My Projects</a></li>
+      <li><a href="project-posting.html" class="active">Post a Project</a></li>
+      <li><a href="messaging.html">Messages</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-ghost">Log Out</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="post-layout">
+    <div>
+      <div class="post-header">
+        <h1>Post a new project</h1>
+        <p>Describe what you need built — the more specific, the better your proposals.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step active"><span class="step-dot">1</span> Project Details</div>
+        <div class="step"><span class="step-dot">2</span> Budget & Timeline</div>
+        <div class="step"><span class="step-dot">3</span> Review & Post</div>
+      </div>
+
+      <form class="card form-card" id="projectForm">
+        <div class="form-group">
+          <label for="title">Project title</label>
+          <input type="text" id="title" placeholder="e.g. FastAPI backend for booking app" required>
+        </div>
+
+        <div class="form-group">
+          <label>Category</label>
+          <div class="category-grid" id="categoryGrid">
+            <button type="button" class="category-btn active" data-cat="Web Dev">Web Dev</button>
+            <button type="button" class="category-btn" data-cat="Design">Design</button>
+            <button type="button" class="category-btn" data-cat="Writing">Writing</button>
+            <button type="button" class="category-btn" data-cat="Mobile">Mobile</button>
+            <button type="button" class="category-btn" data-cat="Marketing">Marketing</button>
+            <button type="button" class="category-btn" data-cat="Data/AI">Data/AI</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Project description</label>
+          <textarea id="description" placeholder="Describe the scope, deliverables, and any technical requirements..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Required skills</label>
+          <div class="skill-input-wrap" id="skillWrap">
+            <input type="text" id="skillInput" placeholder="Type a skill and press Enter">
+          </div>
+          <p class="hint">e.g. FastAPI, PostgreSQL, REST APIs</p>
+        </div>
+
+        <div class="form-2col">
+          <div class="form-group">
+            <label for="budgetMin">Budget minimum ($)</label>
+            <input type="number" id="budgetMin" placeholder="800" required>
+          </div>
+          <div class="form-group">
+            <label for="budgetMax">Budget maximum ($)</label>
+            <input type="number" id="budgetMax" placeholder="1200" required>
+          </div>
+        </div>
+
+        <div class="form-2col">
+          <div class="form-group">
+            <label for="deadline">Deadline</label>
+            <input type="date" id="deadline" required>
+          </div>
+          <div class="form-group">
+            <label for="experience">Experience level</label>
+            <select id="experience">
+              <option>Entry level</option>
+              <option selected>Intermediate</option>
+              <option>Expert</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline">Save as Draft</button>
+          <button type="submit" class="btn btn-primary">Post Project</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="preview-sticky">
+      <span class="preview-label">Live Preview</span>
+      <div class="card preview-card">
+        <div class="preview-top">
+          <span class="tag" id="previewCat">Web Dev</span>
+          <span class="preview-budget" id="previewBudget">$800–1,200</span>
+        </div>
+        <h3 id="previewTitle">Your project title appears here</h3>
+        <p id="previewDesc">Your description will show up here as you type, so freelancers see exactly what you'll publish.</p>
+        <div class="preview-tags" id="previewTags"></div>
+        <div class="preview-foot">Posted just now · 0 proposals</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/project.js"></script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreelanceHub — Where briefs meet skill</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  /* Page-specific: Home */
+  .hero {
+    background: var(--ink);
+    color: var(--paper);
+    padding: var(--space-7) 0 var(--space-6);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero .container {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: var(--space-6);
+    align-items: center;
+  }
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: var(--space-3);
+    display: block;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+    font-weight: 600;
+    line-height: 1.1;
+    margin-bottom: var(--space-4);
+  }
+  .hero h1 em { color: var(--amber); font-style: normal; }
+  .hero p {
+    font-size: 1.1rem;
+    color: rgba(247,245,240,0.75);
+    max-width: 480px;
+    margin-bottom: var(--space-5);
+  }
+  .hero-ctas { display: flex; gap: var(--space-3); margin-bottom: var(--space-5); }
+  .hero-stats { display: flex; gap: var(--space-6); font-family: var(--font-mono); }
+  .hero-stats .stat-num { font-family: var(--font-display); font-size: 1.8rem; color: var(--amber); }
+  .hero-stats .stat-label { font-size: 0.78rem; color: rgba(247,245,240,0.55); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Signature: the "match" visual — brief connects to skill */
+  .match-visual {
+    position: relative;
+    height: 360px;
+  }
+  .match-card {
+    position: absolute;
+    background: var(--paper-raised);
+    border-radius: var(--radius);
+    padding: var(--space-3) var(--space-4);
+    box-shadow: var(--shadow-raised);
+    width: 240px;
+  }
+  .match-card .eyebrow { font-size: 0.68rem; }
+  .match-card h5 { font-family: var(--font-display); font-size: 1.05rem; color: var(--ink); margin: 4px 0 8px; }
+  .match-card p { font-size: 0.8rem; color: var(--slate); margin: 0; }
+  .match-card.brief { top: 0; left: 0; }
+  .match-card.skill { bottom: 20px; right: 0; }
+  .match-line {
+    position: absolute;
+    top: 90px; left: 180px;
+    width: 2px; height: 160px;
+    background: repeating-linear-gradient(180deg, var(--amber) 0 8px, transparent 8px 16px);
+    transform: rotate(24deg);
+    transform-origin: top;
+  }
+  .match-pin {
+    position: absolute;
+    top: 155px; left: 205px;
+    width: 44px; height: 44px;
+    background: var(--amber);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-weight: 500; font-size: 0.7rem;
+    color: var(--ink);
+    box-shadow: var(--shadow-raised);
+  }
+
+  section { padding: var(--space-6) 0; }
+  .section-head { max-width: 560px; margin-bottom: var(--space-5); }
+  .section-head h2 { font-family: var(--font-display); font-size: 2rem; margin: var(--space-2) 0; }
+  .section-head p { color: var(--slate); }
+
+  .roles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+  .role-card { padding: var(--space-4); }
+  .role-card .num { font-family: var(--font-mono); color: var(--amber-deep); font-size: 0.8rem; }
+  .role-card h3 { font-family: var(--font-display); font-size: 1.3rem; margin: var(--space-2) 0 var(--space-2); }
+  .role-card p { color: var(--slate); font-size: 0.92rem; margin-bottom: var(--space-3); }
+
+  .listings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+  .listing-card { padding: var(--space-4); position: relative; }
+  .listing-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-3); }
+  .listing-budget { font-family: var(--font-mono); font-weight: 500; color: var(--green); }
+  .listing-card h3 { font-family: var(--font-display); font-size: 1.15rem; margin-bottom: var(--space-2); }
+  .listing-card p { color: var(--slate); font-size: 0.9rem; margin-bottom: var(--space-3); }
+  .listing-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: var(--space-3); }
+  .listing-foot { display: flex; justify-content: space-between; align-items: center; padding-top: var(--space-3); border-top: 1px dashed var(--border); font-family: var(--font-mono); font-size: 0.78rem; color: var(--slate-light); }
+
+  .cta-band {
+    background: var(--amber);
+    border-radius: var(--radius);
+    padding: var(--space-6);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .cta-band h2 { font-family: var(--font-display); font-size: 1.8rem; color: var(--ink); max-width: 480px; }
+  .cta-band .btn-outline { border-color: var(--ink); }
+
+  @media (max-width: 900px) {
+    .hero .container { grid-template-columns: 1fr; }
+    .match-visual { height: 260px; }
+    .roles-grid, .listings-grid { grid-template-columns: 1fr; }
+    .cta-band { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="index.html" class="nav-logo">Freelance<span>Hub</span></a>
+    <ul class="nav-links">
+      <li><a href="pages/project-posting.html">Find Talent</a></li>
+      <li><a href="pages/freelancer-dashboard.html">Find Work</a></li>
+      <li><a href="#how">How it Works</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="pages/login.html" class="btn btn-ghost">Log in</a>
+      <a href="pages/register.html" class="btn btn-primary btn-sm">Join Free</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <div>
+      <span class="hero-eyebrow">// 4,200 projects posted this month</span>
+      <h1>Post a brief.<br>Find the <em>right</em> hands<br>to build it.</h1>
+      <p>FreelanceHub connects clients with vetted freelancers through transparent bidding, escrow-backed payments, and a review trail you can actually trust.</p>
+      <div class="hero-ctas">
+        <a href="pages/project-posting.html" class="btn btn-primary">Post a Project</a>
+        <a href="pages/freelancer-dashboard.html" class="btn btn-outline" style="border-color: rgba(247,245,240,0.4); color: var(--paper);">Browse Work</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="stat-num">12k+</div><div class="stat-label">Freelancers</div></div>
+        <div><div class="stat-num">98%</div><div class="stat-label">On-time delivery</div></div>
+        <div><div class="stat-num">$2.4M</div><div class="stat-label">Paid out safely</div></div>
+      </div>
+    </div>
+    <div class="match-visual">
+      <div class="match-card brief">
+        <span class="eyebrow">Brief #0192</span>
+        <h5>Redesign onboarding flow</h5>
+        <p>Budget: $1,200 · Figma required</p>
+      </div>
+      <div class="match-line"></div>
+      <div class="match-pin">MATCH</div>
+      <div class="match-card skill">
+        <span class="eyebrow">Freelancer</span>
+        <h5>Priya N. — Product Designer</h5>
+        <p>★ 4.9 · UX/UI · 6 yrs exp</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">How it works</span>
+      <h2>Three roles, one shared ledger</h2>
+      <p>Every project moves through the same transparent record — from posting to payout — no matter which side you're on.</p>
+    </div>
+    <div class="roles-grid">
+      <div class="card role-card">
+        <span class="num">FOR CLIENTS</span>
+        <h3>Post & Hire</h3>
+        <p>Describe your project, set a budget, and review proposals from freelancers who fit your skill and timeline needs.</p>
+        <a href="pages/project-posting.html" class="btn btn-outline btn-sm">Post a project</a>
+      </div>
+      <div class="card role-card">
+        <span class="num">FOR FREELANCERS</span>
+        <h3>Bid & Deliver</h3>
+        <p>Browse open briefs, submit tailored proposals, and get paid safely once milestones are approved.</p>
+        <a href="pages/freelancer-dashboard.html" class="btn btn-outline btn-sm">Browse projects</a>
+      </div>
+      <div class="card role-card">
+        <span class="num">FOR ADMINS</span>
+        <h3>Oversee & Resolve</h3>
+        <p>Monitor platform activity, verify users, and step in on disputes to keep the marketplace trustworthy.</p>
+        <a href="#" class="btn btn-outline btn-sm">Learn more</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Open right now</span>
+      <h2>Fresh briefs on the board</h2>
+    </div>
+    <div class="listings-grid">
+      <div class="card listing-card">
+        <div class="listing-top"><span class="tag">Web Dev</span><span class="listing-budget">$800–1,200</span></div>
+        <h3>FastAPI backend for booking app</h3>
+        <p>Need REST APIs for a scheduling system with PostgreSQL and JWT auth.</p>
+        <div class="listing-tags"><span class="tag">FastAPI</span><span class="tag">PostgreSQL</span></div>
+        <div class="listing-foot"><span>12 proposals</span><span>Posted 2h ago</span></div>
+      </div>
+      <div class="card listing-card">
+        <div class="listing-top"><span class="tag">Design</span><span class="listing-budget">$400–600</span></div>
+        <h3>Mobile app UI kit — fintech</h3>
+        <p>Looking for clean, accessible screens for a savings app, Figma source files.</p>
+        <div class="listing-tags"><span class="tag">Figma</span><span class="tag">UI/UX</span></div>
+        <div class="listing-foot"><span>8 proposals</span><span>Posted 5h ago</span></div>
+      </div>
+      <div class="card listing-card">
+        <div class="listing-top"><span class="tag">Writing</span><span class="listing-budget">$150–300</span></div>
+        <h3>Technical blog series (5 posts)</h3>
+        <p>Explain backend architecture concepts for a developer audience.</p>
+        <div class="listing-tags"><span class="tag">Content</span><span class="tag">Technical</span></div>
+        <div class="listing-foot"><span>21 proposals</span><span>Posted 1d ago</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="cta-band">
+      <h2>Ready to post your first project or find your next gig?</h2>
+      <a href="pages/register.html" class="btn btn-outline">Create Free Account</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div>
+      <div class="nav-logo">Freelance<span>Hub</span></div>
+      <p style="margin-top:12px; font-size:0.85rem; max-width:280px;">A transparent marketplace connecting clients and freelancers — built as a final year project.</p>
+    </div>
+    <div>
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="pages/project-posting.html">Post a Project</a></li>
+        <li><a href="pages/freelancer-dashboard.html">Find Work</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Account</h4>
+      <ul>
+        <li><a href="pages/login.html">Log In</a></li>
+        <li><a href="pages/register.html">Register</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Project</h4>
+      <ul>
+        <li><a href="#">Final Year Project</a></li>
+        <li><a href="#">Documentation</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 FreelanceHub — Academic Project</div>
+</footer>
+
+</body>
+</html>

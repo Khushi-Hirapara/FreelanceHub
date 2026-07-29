@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit Proposal — FreelanceHub</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .proposal-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: var(--space-6);
+    padding: var(--space-6) 0 var(--space-7);
+    align-items: start;
+  }
+
+  /* ---- Left: project brief summary ---- */
+  .brief-sticky { position: sticky; top: 96px; }
+  .brief-card { padding: var(--space-5); }
+  .brief-card .tag { margin-bottom: var(--space-3); }
+  .brief-card h2 { font-family: var(--font-display); font-size: 1.4rem; margin: var(--space-2) 0 var(--space-3); }
+  .brief-card .brief-budget { font-family: var(--font-mono); color: var(--green); font-weight: 600; font-size: 1.1rem; margin-bottom: var(--space-3); }
+  .brief-card p.desc { color: var(--slate); font-size: 0.92rem; margin-bottom: var(--space-4); }
+  .brief-meta-row { display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px dashed var(--border); font-size: 0.85rem; }
+  .brief-meta-row span:first-child { color: var(--slate-light); }
+  .brief-meta-row span:last-child { font-weight: 600; }
+  .brief-tags { display: flex; gap: 6px; flex-wrap: wrap; margin: var(--space-3) 0; }
+  .client-box { display: flex; align-items: center; gap: 10px; margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--border); }
+  .client-box .avatar-sm {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--ink); color: var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 600; font-size: 0.85rem;
+  }
+  .client-box h5 { font-size: 0.9rem; }
+  .client-box span { font-size: 0.78rem; color: var(--slate-light); font-family: var(--font-mono); }
+
+  /* ---- Right: proposal form ---- */
+  .form-card { padding: var(--space-5); }
+  .form-card h1 { font-family: var(--font-display); font-size: 1.7rem; margin-bottom: var(--space-2); }
+  .form-card > p.subtext { color: var(--slate); font-size: 0.9rem; margin-bottom: var(--space-5); }
+
+  .form-group { margin-bottom: var(--space-4); }
+  .form-group label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: var(--space-2); }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    background: var(--paper-raised);
+    font-family: inherit;
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    outline: none; border-color: var(--amber-deep);
+  }
+  .form-group textarea { resize: vertical; min-height: 160px; }
+  .form-group .hint { font-size: 0.78rem; color: var(--slate-light); margin-top: 6px; }
+  .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+
+  .char-counter { text-align: right; font-family: var(--font-mono); font-size: 0.75rem; color: var(--slate-light); margin-top: 4px; }
+
+  .bid-input-wrap { position: relative; }
+  .bid-input-wrap span {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    color: var(--slate); font-weight: 600;
+  }
+  .bid-input-wrap input { padding-left: 28px; }
+
+  .milestone-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+  .milestone-row input { flex: 1; }
+  .milestone-row input.milestone-amount { max-width: 120px; }
+  .milestone-row button { color: var(--slate-light); font-size: 1.1rem; padding: 4px 8px; }
+  .milestone-row button:hover { color: #B23A3A; }
+  .add-milestone-btn { font-size: 0.85rem; color: var(--amber-deep); font-weight: 600; margin-top: 8px; }
+
+  .form-actions { display: flex; justify-content: flex-end; gap: var(--space-3); margin-top: var(--space-5); }
+
+  @media (max-width: 900px) {
+    .proposal-layout { grid-template-columns: 1fr; }
+    .brief-sticky { position: static; }
+    .form-2col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
+    <ul class="nav-links">
+      <li><a href="freelancer-dashboard.html">Find Work</a></li>
+      <li><a href="messaging.html">Messages</a></li>
+      <li><a href="profile.html">Profile</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-ghost">Log Out</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="proposal-layout">
+
+    <!-- Project brief summary -->
+    <div class="brief-sticky">
+      <div class="card brief-card">
+        <span class="tag">Web Dev</span>
+        <h2>FastAPI backend for booking app</h2>
+        <div class="brief-budget">Budget: $800–1,200</div>
+        <p class="desc">Need REST APIs for a scheduling system with PostgreSQL and JWT auth. Should include admin endpoints for managing bookings and a webhook for calendar sync.</p>
+
+        <div class="brief-tags">
+          <span class="tag">FastAPI</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">REST</span>
+          <span class="tag">JWT</span>
+        </div>
+
+        <div class="brief-meta-row"><span>Posted</span><span>2 hours ago</span></div>
+        <div class="brief-meta-row"><span>Proposals so far</span><span>12</span></div>
+        <div class="brief-meta-row"><span>Deadline</span><span>Aug 20, 2026</span></div>
+        <div class="brief-meta-row"><span>Experience level</span><span>Intermediate</span></div>
+
+        <div class="client-box">
+          <div class="avatar-sm">MT</div>
+          <div>
+            <h5>Marcus Thorne</h5>
+            <span>Client · 8 projects posted</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proposal form -->
+    <form class="card form-card" id="proposalForm">
+      <h1>Submit your proposal</h1>
+      <p class="subtext">Write a proposal tailored to this project — clients respond best to specifics, not templates.</p>
+
+      <div class="form-2col">
+        <div class="form-group">
+          <label for="bidAmount">Your bid amount</label>
+          <div class="bid-input-wrap">
+            <span>$</span>
+            <input type="number" id="bidAmount" placeholder="1000" required>
+          </div>
+          <p class="hint">Client's budget: $800–1,200</p>
+        </div>
+        <div class="form-group">
+          <label for="duration">Estimated duration</label>
+          <select id="duration">
+            <option>Less than 1 week</option>
+            <option selected>1–2 weeks</option>
+            <option>2–4 weeks</option>
+            <option>1–3 months</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="coverLetter">Cover letter</label>
+        <textarea id="coverLetter" maxlength="1200" placeholder="Explain your approach, relevant experience, and why you're a good fit for this project..." required></textarea>
+        <div class="char-counter"><span id="charCount">0</span>/1200</div>
+      </div>
+
+      <div class="form-group">
+        <label>Milestones <span style="font-weight:400; color:var(--slate-light);">(optional)</span></label>
+        <div id="milestoneList">
+          <div class="milestone-row">
+            <input type="text" placeholder="Milestone description" class="milestone-desc">
+            <input type="number" placeholder="$" class="milestone-amount">
+            <button type="button" class="remove-milestone">&times;</button>
+          </div>
+        </div>
+        <button type="button" class="add-milestone-btn" id="addMilestone">+ Add another milestone</button>
+      </div>
+
+      <div class="form-group">
+        <label for="attachment">Attach portfolio sample <span style="font-weight:400; color:var(--slate-light);">(optional)</span></label>
+        <input type="file" id="attachment">
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline">Save Draft</button>
+        <button type="submit" class="btn btn-primary">Submit Proposal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/project.js"></script>
+</body>
+</html>

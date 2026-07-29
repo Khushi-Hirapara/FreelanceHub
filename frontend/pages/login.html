@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log In — FreelanceHub</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .auth-wrap {
+    min-height: calc(100vh - 72px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .auth-side {
+    background: var(--ink);
+    color: var(--paper);
+    padding: var(--space-7) var(--space-6);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .auth-side .eyebrow { color: var(--amber); margin-bottom: var(--space-3); display:block; }
+  .auth-side h2 {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    line-height: 1.15;
+    margin-bottom: var(--space-4);
+    max-width: 380px;
+  }
+  .auth-side p { color: rgba(247,245,240,0.7); max-width: 360px; margin-bottom: var(--space-5); }
+  .auth-quote {
+    border-left: 3px solid var(--amber);
+    padding-left: var(--space-3);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: rgba(247,245,240,0.85);
+    max-width: 340px;
+  }
+  .auth-quote span { display:block; margin-top: var(--space-2); font-family: var(--font-mono); font-style: normal; font-size: 0.78rem; color: var(--slate-light); }
+
+  .auth-form-side {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6) var(--space-4);
+  }
+  .auth-box { width: 100%; max-width: 400px; }
+  .auth-box .logo-mini { font-family: var(--font-display); font-size: 1.3rem; margin-bottom: var(--space-5); }
+  .auth-box .logo-mini span { color: var(--amber-deep); }
+  .auth-box h1 { font-family: var(--font-display); font-size: 1.8rem; margin-bottom: var(--space-2); }
+  .auth-box .subtext { color: var(--slate); font-size: 0.92rem; margin-bottom: var(--space-5); }
+
+  .form-group { margin-bottom: var(--space-4); }
+  .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+    color: var(--ink);
+  }
+  .form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    background: var(--paper-raised);
+    transition: border-color 0.15s ease;
+  }
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--amber-deep);
+  }
+  .form-group .hint { font-size: 0.78rem; color: var(--slate-light); margin-top: 6px; }
+  .form-row-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); font-size: 0.88rem; }
+  .form-row-between a { color: var(--amber-deep); font-weight: 600; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; }
+
+  .error-msg {
+    background: rgba(220,80,80,0.08);
+    border: 1px solid rgba(220,80,80,0.25);
+    color: #B23A3A;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    margin-bottom: var(--space-4);
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  .divider { display: flex; align-items: center; gap: 12px; margin: var(--space-4) 0; color: var(--slate-light); font-size: 0.8rem; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .role-select { display: flex; gap: 10px; margin-bottom: var(--space-4); }
+  .role-btn {
+    flex: 1;
+    padding: 10px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--slate);
+    background: var(--paper-raised);
+  }
+  .role-btn.active { border-color: var(--amber-deep); color: var(--ink); background: rgba(232,163,61,0.1); }
+
+  .switch-auth { text-align: center; margin-top: var(--space-5); font-size: 0.9rem; color: var(--slate); }
+  .switch-auth a { color: var(--amber-deep); font-weight: 600; }
+
+  @media (max-width: 860px) {
+    .auth-wrap { grid-template-columns: 1fr; }
+    .auth-side { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
+    <ul class="nav-links">
+      <li><a href="project-posting.html">Find Talent</a></li>
+      <li><a href="freelancer-dashboard.html">Find Work</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="register.html" class="btn btn-primary btn-sm">Join Free</a>
+    </div>
+  </div>
+</nav>
+
+<div class="auth-wrap">
+  <div class="auth-side">
+    <span class="eyebrow">// Welcome back</span>
+    <h2>Every project you've shipped is still on your ledger.</h2>
+    <p>Log in to check proposal replies, active contracts, and messages waiting on you.</p>
+    <div class="auth-quote">
+      "Posted a brief on Monday, had three solid proposals by Wednesday, contract signed by Friday."
+      <span>— Client, Web Development project</span>
+    </div>
+  </div>
+
+  <div class="auth-form-side">
+    <div class="auth-box">
+      <div class="logo-mini">Freelance<span>Hub</span></div>
+      <h1>Log in</h1>
+      <p class="subtext">Enter your details to access your dashboard.</p>
+
+      <div class="error-msg" id="loginError">Incorrect email or password. Try again.</div>
+
+      <form id="loginForm" novalidate>
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required minlength="6">
+        </div>
+        <div class="form-row-between">
+          <label class="checkbox-row"><input type="checkbox" name="remember"> Remember me</label>
+          <a href="#">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Log In</button>
+      </form>
+
+      <div class="divider">or continue as</div>
+      <div class="role-select">
+        <button class="role-btn active" data-role="client" type="button">Client</button>
+        <button class="role-btn" data-role="freelancer" type="button">Freelancer</button>
+        <button class="role-btn" data-role="admin" type="button">Admin</button>
+      </div>
+
+      <p class="switch-auth">Don't have an account? <a href="register.html">Create one free</a></p>
+    </div>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/auth.js"></script>
+</body>
+</html>
