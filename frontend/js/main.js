@@ -62,6 +62,7 @@ function updateRoleNavLinks() {
   } else if (role === 'freelancer') {
     items = [
       { href: prefix + 'freelancer-dashboard.html', label: 'Find Work', key: 'find-work' },
+      { href: prefix + 'contracts.html', label: 'Contracts', key: 'contracts' },
       { href: prefix + 'messaging.html', label: 'Messages', key: 'messages' },
       { href: prefix + 'profile.html', label: 'Profile', key: 'profile' },
     ];
@@ -70,6 +71,7 @@ function updateRoleNavLinks() {
     items = [
       { href: prefix + 'find-talent.html', label: 'Find Talent', key: 'find-talent' },
       { href: prefix + 'client-dashboard.html', label: 'My Projects', key: 'my-projects' },
+      { href: prefix + 'contracts.html', label: 'Contracts', key: 'contracts' },
       { href: prefix + 'messaging.html', label: 'Messages', key: 'messages' },
       { href: prefix + 'profile.html', label: 'Profile', key: 'profile' },
     ];

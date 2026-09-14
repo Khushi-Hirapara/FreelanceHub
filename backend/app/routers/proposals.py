@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
+from app.contract_flow import accept_proposal_and_create_contract
 from app.database import get_db
 from app.deps import get_current_user, require_roles
 from app.models import Project, ProjectStatus, Proposal, ProposalStatus, User, UserRole
@@ -21,6 +22,7 @@ def serialize_proposal(proposal: Proposal, include_project: bool = False) -> Pro
         milestones=proposal.milestones or [],
         status=proposal.status,
         created_at=proposal.created_at,
+        contract_id=proposal.contract.id if proposal.contract else None,
         freelancer=UserOut.model_validate(proposal.freelancer) if proposal.freelancer else None,
         project=None,
     )
@@ -82,7 +84,7 @@ def create_proposal(
 
     proposal = db.scalars(
         select(Proposal)
-        .options(joinedload(Proposal.freelancer), joinedload(Proposal.project))
+        .options(joinedload(Proposal.freelancer), joinedload(Proposal.project), joinedload(Proposal.contract))
         .where(Proposal.id == proposal.id)
     ).unique().one()
     return serialize_proposal(proposal, include_project=True)
@@ -95,7 +97,7 @@ def my_proposals(
 ):
     proposals = db.scalars(
         select(Proposal)
-        .options(joinedload(Proposal.freelancer), joinedload(Proposal.project))
+        .options(joinedload(Proposal.freelancer), joinedload(Proposal.project), joinedload(Proposal.contract))
         .where(Proposal.freelancer_id == current_user.id)
         .order_by(Proposal.created_at.desc())
     ).unique().all()
@@ -116,7 +118,7 @@ def project_proposals(
 
     proposals = db.scalars(
         select(Proposal)
-        .options(joinedload(Proposal.freelancer), joinedload(Proposal.project))
+        .options(joinedload(Proposal.freelancer), joinedload(Proposal.project), joinedload(Proposal.contract))
         .where(Proposal.project_id == project_id)
         .order_by(Proposal.created_at.desc())
     ).unique().all()
@@ -131,7 +133,7 @@ def get_proposal(
 ):
     proposal = db.scalars(
         select(Proposal)
-        .options(joinedload(Proposal.freelancer), joinedload(Proposal.project))
+        .options(joinedload(Proposal.freelancer), joinedload(Proposal.project), joinedload(Proposal.contract))
         .where(Proposal.id == proposal_id)
     ).unique().first()
     if not proposal:
@@ -154,7 +156,7 @@ def update_proposal_status(
 ):
     proposal = db.scalars(
         select(Proposal)
-        .options(joinedload(Proposal.freelancer), joinedload(Proposal.project))
+        .options(joinedload(Proposal.freelancer), joinedload(Proposal.project), joinedload(Proposal.contract))
         .where(Proposal.id == proposal_id)
     ).unique().first()
     if not proposal:
@@ -170,23 +172,21 @@ def update_proposal_status(
     else:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported status change")
 
-    proposal.status = payload.status
-
     if payload.status == ProposalStatus.accepted:
-        project.status = ProjectStatus.in_progress
-        # Reject other pending proposals on the same project
-        others = db.scalars(
-            select(Proposal).where(
-                Proposal.project_id == project.id,
-                Proposal.id != proposal.id,
-                Proposal.status == ProposalStatus.pending,
+        accept_proposal_and_create_contract(db, proposal, current_user)
+        db.commit()
+        proposal = db.scalars(
+            select(Proposal)
+            .options(
+                joinedload(Proposal.freelancer),
+                joinedload(Proposal.project),
+                joinedload(Proposal.contract),
             )
-        ).all()
-        for other in others:
-            other.status = ProposalStatus.rejected
-            db.add(other)
-        db.add(project)
+            .where(Proposal.id == proposal_id)
+        ).unique().one()
+        return serialize_proposal(proposal, include_project=True)
 
+    proposal.status = payload.status
     db.add(proposal)
     db.commit()
     db.refresh(proposal)

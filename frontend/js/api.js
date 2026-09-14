@@ -136,6 +136,11 @@ function statusLabel(status) {
     completed: 'Completed',
     draft: 'Draft',
     cancelled: 'Cancelled',
+    pending: 'Pending',
+    funded: 'Funded',
+    submitted: 'Submitted',
+    approved: 'Approved',
+    disputed: 'Disputed',
   };
   return map[status] || status;
 }
@@ -148,6 +153,11 @@ function statusClass(status) {
     completed: 'status-open',
     draft: 'status-review',
     cancelled: 'status-review',
+    pending: 'status-review',
+    funded: 'status-progress',
+    submitted: 'status-progress',
+    approved: 'status-open',
+    disputed: 'status-review',
   };
   return map[status] || 'status-open';
 }

@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
-from app.routers import auth, messages, projects, proposals, stats, users
+from app.routers import auth, contracts, messages, projects, proposals, stats, users
 
 
 @asynccontextmanager
@@ -33,6 +33,7 @@ app.include_router(auth.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
 app.include_router(projects.router, prefix="/api")
 app.include_router(proposals.router, prefix="/api")
+app.include_router(contracts.router, prefix="/api")
 app.include_router(messages.router, prefix="/api")
 app.include_router(stats.router, prefix="/api")
 

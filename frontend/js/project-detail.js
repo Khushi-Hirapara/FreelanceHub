@@ -83,24 +83,133 @@ function renderActions(project) {
     return;
   }
 
+  renderRoleActions(project, user, actions);
+}
+
+async function renderRoleActions(project, user, actions) {
   const isOwner =
     (user.role === 'client' || user.role === 'admin') && project.client_id === user.id;
 
+  let contract = null;
+  if (Auth.isLoggedIn()) {
+    try {
+      contract = await api(`/projects/${project.id}/contract`);
+    } catch (err) {
+      if (err.status === 403) {
+        contract = null;
+      } else if (err.status && err.status !== 404) {
+        actions.insertAdjacentHTML(
+          'beforeend',
+          `<p style="color:#B23A3A;">${escapeHtml(err.message)}</p>`
+        );
+      }
+    }
+  }
+
   if (isOwner) {
+    const contractBtn = contract
+      ? `<a href="contract-detail.html?id=${contract.id}" class="btn btn-primary">View Contract</a>`
+      : '';
     actions.innerHTML = `
       <a href="project-posting.html?edit=${project.id}" class="btn btn-outline">Edit Project</a>
-      <a href="client-dashboard.html" class="btn btn-primary">View Proposals (${project.proposal_count || 0})</a>
+      ${contractBtn}
     `;
+    if (!contract) loadProposals(project.id);
     return;
   }
 
   if (user.role === 'freelancer') {
+    const contractBtn = contract
+      ? `<a href="contract-detail.html?id=${contract.id}" class="btn btn-outline">View Contract</a>`
+      : `<a href="proposal-submission.html?project_id=${project.id}" class="btn btn-primary">Submit Proposal</a>`;
     actions.innerHTML = `
-      <a href="proposal-submission.html?project_id=${project.id}" class="btn btn-primary">Submit Proposal</a>
+      ${contractBtn}
       <a href="messaging.html" class="btn btn-outline">Message Client</a>
     `;
     return;
   }
 
+  if (user.role === 'admin' && contract) {
+    actions.innerHTML = `<a href="contract-detail.html?id=${contract.id}" class="btn btn-primary">View Contract</a>`;
+    return;
+  }
+
   actions.innerHTML = `<a href="client-dashboard.html" class="btn btn-outline">Go to Dashboard</a>`;
+}
+
+async function loadProposals(projectId) {
+  const panel = document.getElementById('proposalPanel');
+  if (!panel) return;
+  panel.innerHTML = `<div class="card" style="padding:var(--space-4);margin-bottom:var(--space-4);"><p style="color:var(--slate);">Loading proposals…</p></div>`;
+  try {
+    const proposals = await api(`/projects/${projectId}/proposals`);
+    if (!proposals.length) {
+      panel.innerHTML = `<div class="card" style="padding:var(--space-4);"><p style="color:var(--slate);">No proposals yet.</p></div>`;
+      return;
+    }
+    panel.innerHTML = `
+      <h2 style="font-family:var(--font-display);font-size:1.4rem;margin:0 0 var(--space-3);">Proposals</h2>
+      ${proposals.map(renderProposalCard).join('')}
+    `;
+    panel.querySelectorAll('[data-accept]').forEach((btn) => {
+      btn.addEventListener('click', () => acceptProposal(Number(btn.dataset.accept), btn));
+    });
+  } catch (err) {
+    panel.innerHTML = `<div class="card" style="padding:var(--space-4);"><p style="color:#B23A3A;">${escapeHtml(err.message)}</p></div>`;
+  }
+}
+
+function renderProposalCard(proposal) {
+  const name = proposal.freelancer?.name || 'Freelancer';
+  const pending = proposal.status === 'pending';
+  return `
+    <article class="card" style="padding:var(--space-4);margin-bottom:var(--space-3);">
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;">
+        <div>
+          <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:4px;">${escapeHtml(name)}</h3>
+          <p style="color:var(--slate);font-size:0.9rem;margin-bottom:8px;">${escapeHtml(proposal.estimated_duration || 'Duration not specified')}</p>
+        </div>
+        <strong style="color:var(--green);font-family:var(--font-mono);">${formatMoney(proposal.bid_amount)}</strong>
+      </div>
+      <p style="white-space:pre-wrap;color:var(--ink);font-size:0.95rem;margin-bottom:12px;">${escapeHtml(proposal.cover_letter || '')}</p>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+        <span class="status-badge ${proposal.status === 'accepted' ? 'status-accepted' : 'status-pending'}">${escapeHtml(statusLabel(proposal.status))}</span>
+        ${pending ? `<button type="button" class="btn btn-primary" data-accept="${proposal.id}">Accept proposal</button>` : (proposal.contract_id ? `<a class="btn btn-outline" href="contract-detail.html?id=${proposal.contract_id}">View Contract</a>` : '')}
+      </div>
+    </article>
+  `;
+}
+
+async function acceptProposal(proposalId, button) {
+  button.disabled = true;
+  button.textContent = 'Accepting…';
+  try {
+    const data = await api(`/proposals/${proposalId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'accepted' }),
+    });
+    const link = data.contract_id
+      ? ` <a href="contract-detail.html?id=${data.contract_id}" style="color:inherit;text-decoration:underline;">View contract</a>`
+      : '';
+    showToast('Proposal accepted. Contract created.' + (data.contract_id ? '' : ''));
+    const panel = document.getElementById('proposalPanel');
+    if (panel) {
+      panel.innerHTML = `
+        <div class="card" style="padding:var(--space-4);margin-bottom:var(--space-4);">
+          <p>Proposal accepted. A contract is pending (no payment yet).${link}</p>
+        </div>
+      `;
+    }
+    const actions = document.getElementById('projectActions');
+    if (actions && data.contract_id) {
+      actions.insertAdjacentHTML(
+        'beforeend',
+        ` <a href="contract-detail.html?id=${data.contract_id}" class="btn btn-primary">View Contract</a>`
+      );
+    }
+  } catch (err) {
+    button.disabled = false;
+    button.textContent = 'Accept proposal';
+    showToast(err.message || 'Could not accept proposal.', 'error');
+  }
 }

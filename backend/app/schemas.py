@@ -3,7 +3,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
-from app.models import ProjectStatus, ProposalStatus, UserRole
+from app.models import ContractStatus, ProjectStatus, ProposalStatus, UserRole
 
 
 class TokenResponse(BaseModel):
@@ -146,6 +146,7 @@ class ProposalOut(BaseModel):
     milestones: list[Any] = []
     status: ProposalStatus
     created_at: datetime
+    contract_id: int | None = None
     freelancer: UserOut | None = None
     project: ProjectOut | None = None
 
@@ -177,6 +178,55 @@ class ConversationOut(BaseModel):
     last_message: str | None = None
     unread_count: int = 0
     updated_at: datetime
+
+
+class ContractPartyOut(BaseModel):
+    """Public party fields only — no email or password hash."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    role: UserRole
+    title: str | None = None
+    location: str | None = None
+
+
+class ContractProjectOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    title: str
+    category: str
+    status: ProjectStatus
+
+
+class ContractCreate(BaseModel):
+    proposal_id: int
+
+
+class ContractStatusUpdate(BaseModel):
+    status: ContractStatus
+
+
+class ContractOut(BaseModel):
+    id: int
+    project_id: int
+    proposal_id: int
+    client_id: int
+    freelancer_id: int
+    agreed_amount: float
+    platform_fee: float
+    freelancer_amount: float
+    currency: str
+    status: ContractStatus
+    start_date: date | None = None
+    end_date: date | None = None
+    created_at: datetime
+    updated_at: datetime
+    project: ContractProjectOut | None = None
+    client: ContractPartyOut | None = None
+    freelancer: ContractPartyOut | None = None
 
 
 TokenResponse.model_rebuild()

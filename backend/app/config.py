@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 1440
     cors_origins: str = "http://localhost:5500,http://127.0.0.1:5500,null"
+    # Fraction of agreed_amount kept by the platform. Not a payment processor.
+    platform_fee_rate: float = 0.10
 
     @property
     def cors_origin_list(self) -> list[str]:

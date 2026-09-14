@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contracts — FreelanceHub</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .dash-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 72px); }
+  .sidebar { background: var(--ink); color: var(--paper); padding: var(--space-5) var(--space-3); }
+  .sidebar-profile { display: flex; align-items: center; gap: 12px; padding-bottom: var(--space-4); margin-bottom: var(--space-4); border-bottom: 1px solid var(--border-dark); }
+  .avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--amber); color: var(--ink); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 600; }
+  .sidebar-profile h4 { font-size: 0.95rem; }
+  .sidebar-profile span { font-size: 0.75rem; color: rgba(247,245,240,0.55); font-family: var(--font-mono); }
+  .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius); font-size: 0.9rem; color: rgba(247,245,240,0.7); margin-bottom: 4px; }
+  .sidebar-nav a:hover { background: rgba(255,255,255,0.06); color: var(--paper); }
+  .sidebar-nav a.active { background: var(--amber); color: var(--ink); font-weight: 600; }
+  .sidebar-nav .icon { font-family: var(--font-mono); font-size: 0.9rem; width: 18px; text-align: center; }
+  .dash-main { padding: var(--space-5) var(--space-5) var(--space-6); }
+  .dash-header h1 { font-family: var(--font-display); font-size: 1.9rem; margin-bottom: 4px; }
+  .dash-header p { color: var(--slate); font-size: 0.92rem; margin-bottom: var(--space-4); }
+  .contract-item { padding: var(--space-4); margin-bottom: var(--space-3); }
+  .contract-top { display: flex; justify-content: space-between; gap: var(--space-3); align-items: flex-start; margin-bottom: 8px; }
+  .contract-item h3 { font-family: var(--font-display); font-size: 1.1rem; }
+  .contract-meta { color: var(--slate); font-size: 0.88rem; margin-bottom: 10px; }
+  .contract-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 0.85rem; }
+  .status-badge { font-family: var(--font-mono); font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; }
+  .status-pending, .status-disputed { background: rgba(232,163,61,0.15); color: var(--amber-deep); }
+  .status-funded, .status-progress, .status-submitted { background: rgba(61,90,160,0.12); color: #2c4a8a; }
+  .status-approved, .status-completed { background: rgba(61,131,97,0.12); color: var(--green); }
+  .status-cancelled { background: rgba(74,82,104,0.12); color: var(--slate); }
+  @media (max-width: 960px) { .dash-layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="logo">Freelance<span>Hub</span></a>
+    <div class="nav-links"></div>
+    <div class="nav-actions"></div>
+    <button class="mobile-menu" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="dash-layout">
+  <aside class="sidebar">
+    <div class="sidebar-profile">
+      <div class="avatar" id="sideAvatar">—</div>
+      <div>
+        <h4 id="sideName">Loading…</h4>
+        <span id="sideRole">—</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sideNav"></nav>
+  </aside>
+  <main class="dash-main">
+    <div class="dash-header">
+      <h1>Contracts</h1>
+      <p>Agreements created when a proposal is accepted. Payments are not connected yet.</p>
+    </div>
+    <div id="contractList">
+      <p style="color:var(--slate);padding:12px 0;">Loading contracts…</p>
+    </div>
+  </main>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/contracts.js"></script>
+</body>
+</html>

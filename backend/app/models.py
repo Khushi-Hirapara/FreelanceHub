@@ -9,6 +9,7 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     Integer,
+    Numeric,
     String,
     Text,
     UniqueConstraint,
@@ -45,6 +46,17 @@ class ProposalStatus(str, Enum):
     withdrawn = "withdrawn"
 
 
+class ContractStatus(str, Enum):
+    pending = "pending"
+    funded = "funded"
+    in_progress = "in_progress"
+    submitted = "submitted"
+    approved = "approved"
+    completed = "completed"
+    cancelled = "cancelled"
+    disputed = "disputed"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -73,6 +85,14 @@ class User(Base):
 
     projects: Mapped[list["Project"]] = relationship(back_populates="client", cascade="all, delete-orphan")
     proposals: Mapped[list["Proposal"]] = relationship(back_populates="freelancer", cascade="all, delete-orphan")
+    client_contracts: Mapped[list["Contract"]] = relationship(
+        back_populates="client",
+        foreign_keys="Contract.client_id",
+    )
+    freelancer_contracts: Mapped[list["Contract"]] = relationship(
+        back_populates="freelancer",
+        foreign_keys="Contract.freelancer_id",
+    )
     sent_messages: Mapped[list["Message"]] = relationship(
         back_populates="sender",
         foreign_keys="Message.sender_id",
@@ -105,6 +125,7 @@ class Project(Base):
 
     client: Mapped["User"] = relationship(back_populates="projects")
     proposals: Mapped[list["Proposal"]] = relationship(back_populates="project", cascade="all, delete-orphan")
+    contract: Mapped["Contract | None"] = relationship(back_populates="project", uselist=False)
 
 
 class Proposal(Base):
@@ -130,6 +151,41 @@ class Proposal(Base):
 
     project: Mapped["Project"] = relationship(back_populates="proposals")
     freelancer: Mapped["User"] = relationship(back_populates="proposals")
+    contract: Mapped["Contract | None"] = relationship(back_populates="proposal", uselist=False)
+
+
+class Contract(Base):
+    __tablename__ = "contracts"
+    __table_args__ = (
+        UniqueConstraint("project_id", name="uq_contract_project"),
+        UniqueConstraint("proposal_id", name="uq_contract_proposal"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    project_id: Mapped[int] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"), nullable=False, index=True)
+    proposal_id: Mapped[int] = mapped_column(ForeignKey("proposals.id", ondelete="CASCADE"), nullable=False, index=True)
+    client_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    freelancer_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+
+    agreed_amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
+    platform_fee: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
+    freelancer_amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), nullable=False, default="USD")
+    status: Mapped[ContractStatus] = mapped_column(
+        SAEnum(ContractStatus, name="contract_status"),
+        default=ContractStatus.pending,
+        index=True,
+    )
+    start_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    end_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+    project: Mapped["Project"] = relationship(back_populates="contract")
+    proposal: Mapped["Proposal"] = relationship(back_populates="contract")
+    client: Mapped["User"] = relationship(back_populates="client_contracts", foreign_keys=[client_id])
+    freelancer: Mapped["User"] = relationship(back_populates="freelancer_contracts", foreign_keys=[freelancer_id])
 
 
 class Conversation(Base):

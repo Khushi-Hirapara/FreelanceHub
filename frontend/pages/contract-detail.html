@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contract — FreelanceHub</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .detail-page { max-width: 860px; margin: 0 auto; padding: var(--space-5) var(--space-4) var(--space-6); }
+  .detail-card { padding: var(--space-5); margin-bottom: var(--space-4); }
+  .detail-card h1 { font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: 8px; }
+  .detail-card h2 { font-family: var(--font-display); font-size: 1.15rem; margin: var(--space-4) 0 8px; }
+  .muted { color: var(--slate); }
+  .money-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: var(--space-3); }
+  .money-grid div { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+  .money-grid span { display: block; color: var(--slate); font-size: 0.78rem; font-family: var(--font-mono); margin-bottom: 4px; }
+  .money-grid strong { font-size: 1.05rem; }
+  .people { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .people div { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+  .status-badge { font-family: var(--font-mono); font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; }
+  .status-pending, .status-disputed { background: rgba(232,163,61,0.15); color: var(--amber-deep); }
+  .status-funded, .status-in_progress, .status-submitted { background: rgba(61,90,160,0.12); color: #2c4a8a; }
+  .status-approved, .status-completed { background: rgba(61,131,97,0.12); color: var(--green); }
+  .status-cancelled { background: rgba(74,82,104,0.12); color: var(--slate); }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: var(--space-4); }
+  @media (max-width: 700px) { .money-grid, .people { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="logo">Freelance<span>Hub</span></a>
+    <div class="nav-links"></div>
+    <div class="nav-actions"></div>
+    <button class="mobile-menu" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="detail-page">
+  <p style="margin-bottom:var(--space-3);"><a href="contracts.html">← Back to contracts</a></p>
+  <div class="card detail-card" id="contractBody">
+    <p class="muted">Loading contract…</p>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/contract-detail.js"></script>
+</body>
+</html>

@@ -82,6 +82,12 @@
   .detail-back {
     margin-bottom: var(--space-4);
   }
+  .status-badge {
+    font-family: var(--font-mono); font-size: 0.7rem; padding: 3px 10px; border-radius: 20px;
+    text-transform: uppercase;
+  }
+  .status-pending { background: rgba(232,163,61,0.15); color: var(--amber-deep); }
+  .status-accepted { background: rgba(61,131,97,0.12); color: var(--green); }
 </style>
 </head>
 <body>
@@ -129,6 +135,8 @@
 
     <div class="detail-actions" id="projectActions"></div>
   </div>
+
+  <div id="proposalPanel"></div>
 </div>
 
 <script src="../js/api.js"></script>
