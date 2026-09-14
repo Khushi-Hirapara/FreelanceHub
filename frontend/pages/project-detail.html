@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Detail — FreelanceHub</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .detail-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--space-5) var(--space-4) var(--space-6);
+  }
+
+  .detail-card {
+    padding: var(--space-5);
+    margin-bottom: var(--space-4);
+  }
+  .detail-card .tag { margin-bottom: var(--space-3); }
+  .detail-card h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    margin-bottom: var(--space-3);
+    line-height: 1.2;
+  }
+  .detail-budget {
+    font-family: var(--font-mono);
+    color: var(--green);
+    font-weight: 600;
+    font-size: 1.15rem;
+    margin-bottom: var(--space-4);
+  }
+  .detail-desc {
+    color: var(--slate);
+    font-size: 1rem;
+    line-height: 1.65;
+    margin-bottom: var(--space-4);
+    white-space: pre-wrap;
+  }
+
+  .brief-meta-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-top: 1px dashed var(--border);
+    font-size: 0.9rem;
+  }
+  .brief-meta-row span:first-child { color: var(--slate-light); }
+  .brief-meta-row span:last-child { font-weight: 600; }
+
+  .brief-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: var(--space-4) 0 var(--space-2);
+  }
+
+  .client-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border);
+  }
+  .client-box .avatar-sm {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--ink); color: var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 600; font-size: 0.85rem;
+  }
+  .client-box h5 { font-size: 0.9rem; }
+  .client-box span { font-size: 0.78rem; color: var(--slate-light); font-family: var(--font-mono); }
+
+  .detail-actions {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-top: var(--space-4);
+  }
+
+  .detail-back {
+    margin-bottom: var(--space-4);
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
+    <ul class="nav-links">
+      <li><a href="find-talent.html">Find Talent</a></li>
+      <li><a href="freelancer-dashboard.html">Find Work</a></li>
+      <li><a href="messaging.html">Messages</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-ghost">Log Out</a>
+    </div>
+  </div>
+</nav>
+
+<div class="detail-page">
+  <div class="detail-back">
+    <a href="freelancer-dashboard.html" id="backLink" class="btn btn-ghost btn-sm">← Back</a>
+  </div>
+
+  <div class="card detail-card" id="projectDetail">
+    <span class="tag" id="projectCategory">Loading</span>
+    <h1 id="projectTitle">Loading project…</h1>
+    <div class="detail-budget" id="projectBudget">Budget: —</div>
+    <p class="detail-desc" id="projectDescription">Fetching project details…</p>
+
+    <div class="brief-tags" id="projectSkills"></div>
+
+    <div class="brief-meta-row"><span>Status</span><span id="projectStatus">—</span></div>
+    <div class="brief-meta-row"><span>Posted</span><span id="projectPosted">—</span></div>
+    <div class="brief-meta-row"><span>Proposals so far</span><span id="projectProposals">—</span></div>
+    <div class="brief-meta-row"><span>Deadline</span><span id="projectDeadline">—</span></div>
+    <div class="brief-meta-row"><span>Experience level</span><span id="projectExperience">—</span></div>
+
+    <div class="client-box">
+      <div class="avatar-sm" id="clientAvatar">—</div>
+      <div>
+        <h5 id="clientName">Client</h5>
+        <span id="clientMeta">Loading…</span>
+      </div>
+    </div>
+
+    <div class="detail-actions" id="projectActions"></div>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/project-detail.js"></script>
+</body>
+</html>

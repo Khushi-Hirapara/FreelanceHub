@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find Talent — FreelanceHub</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .dash-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: calc(100vh - 72px);
+  }
+  .sidebar {
+    background: var(--ink);
+    color: var(--paper);
+    padding: var(--space-5) var(--space-3);
+  }
+  .sidebar-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-dark);
+  }
+  .avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--amber);
+    color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 600;
+    flex-shrink: 0;
+  }
+  .sidebar-profile h4 { font-size: 0.95rem; }
+  .sidebar-profile span { font-size: 0.75rem; color: rgba(247,245,240,0.55); font-family: var(--font-mono); }
+  .sidebar-nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    color: rgba(247,245,240,0.7);
+    margin-bottom: 4px;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .sidebar-nav a:hover { background: rgba(255,255,255,0.06); color: var(--paper); }
+  .sidebar-nav a.active { background: var(--amber); color: var(--ink); font-weight: 600; }
+  .sidebar-nav .icon { font-family: var(--font-mono); font-size: 0.9rem; width: 18px; text-align: center; }
+
+  .dash-main { padding: var(--space-5) var(--space-5) var(--space-6); }
+  .dash-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: var(--space-5);
+  }
+  .dash-header h1 { font-family: var(--font-display); font-size: 1.9rem; margin-bottom: 4px; }
+  .dash-header p { color: var(--slate); font-size: 0.92rem; }
+
+  .filters-bar {
+    display: flex; align-items: center; gap: var(--space-3);
+    margin-bottom: var(--space-3);
+    flex-wrap: wrap;
+  }
+  .search-input {
+    flex: 1; min-width: 220px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    background: var(--paper-raised);
+  }
+  .search-input:focus { outline: none; border-color: var(--amber-deep); }
+  .filter-chip {
+    padding: 8px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--slate);
+    background: var(--paper-raised);
+  }
+  .filter-chip.active { border-color: var(--amber-deep); background: rgba(232,163,61,0.1); color: var(--ink); }
+
+  .filter-group-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--slate-light);
+    width: 100%;
+    margin-top: var(--space-2);
+  }
+
+  .talent-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .talent-card {
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .talent-card-top {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+  .talent-avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--amber);
+    color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 600; font-size: 1.05rem;
+    flex-shrink: 0;
+  }
+  .talent-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    margin-bottom: 2px;
+  }
+  .talent-title {
+    font-size: 0.85rem;
+    color: var(--slate);
+  }
+  .talent-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+  }
+  .talent-rating { color: var(--ink); }
+  .talent-rating .stars { color: var(--amber-deep); letter-spacing: 1px; }
+  .talent-rate { color: var(--green); font-weight: 600; }
+  .talent-bio {
+    font-size: 0.88rem;
+    color: var(--slate);
+    line-height: 1.45;
+    flex: 1;
+  }
+  .talent-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .talent-card .btn { width: 100%; }
+
+  #noTalentResults {
+    display: none;
+    color: var(--slate);
+    padding: var(--space-4) 0;
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 1100px) {
+    .talent-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 960px) {
+    .dash-layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+  @media (max-width: 640px) {
+    .talent-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
+    <ul class="nav-links">
+      <li><a href="find-talent.html" class="active">Find Talent</a></li>
+      <li><a href="freelancer-dashboard.html">Find Work</a></li>
+      <li><a href="client-dashboard.html">My Projects</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-ghost">Log Out</a>
+    </div>
+  </div>
+</nav>
+
+<div class="dash-layout">
+  <aside class="sidebar">
+    <div class="sidebar-profile">
+      <div class="avatar">CL</div>
+      <div>
+        <h4>Client</h4>
+        <span>Browse freelancers</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="find-talent.html" class="active"><span class="icon">#</span> Find Talent</a>
+      <a href="client-dashboard.html"><span class="icon">#</span> My Projects</a>
+      <a href="project-posting.html"><span class="icon">#</span> Post a Project</a>
+      <a href="messaging.html"><span class="icon">#</span> Messages</a>
+      <a href="profile.html"><span class="icon">#</span> Profile</a>
+    </nav>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-header">
+      <div>
+        <h1>Find Talent</h1>
+        <p>Browse freelancers by skill, rating, and rate — hire the right hands for your brief.</p>
+      </div>
+      <a href="project-posting.html" class="btn btn-primary">+ Post a Project</a>
+    </div>
+
+    <div class="filters-bar">
+      <input type="text" class="search-input" id="talentSearch" placeholder="Search by name, skill, or keyword…">
+    </div>
+
+    <div class="filters-bar">
+      <span class="filter-group-label">Skill category</span>
+      <button type="button" class="filter-chip filter-category active" data-category="all">All</button>
+      <button type="button" class="filter-chip filter-category" data-category="web-dev">Web Dev</button>
+      <button type="button" class="filter-chip filter-category" data-category="design">Design</button>
+      <button type="button" class="filter-chip filter-category" data-category="writing">Writing</button>
+      <button type="button" class="filter-chip filter-category" data-category="mobile">Mobile</button>
+    </div>
+
+    <div class="filters-bar">
+      <span class="filter-group-label">Min rating</span>
+      <button type="button" class="filter-chip filter-rating active" data-rating="0">Any</button>
+      <button type="button" class="filter-chip filter-rating" data-rating="4">4.0+</button>
+      <button type="button" class="filter-chip filter-rating" data-rating="4.5">4.5+</button>
+      <button type="button" class="filter-chip filter-rating" data-rating="4.8">4.8+</button>
+    </div>
+
+    <div class="filters-bar">
+      <span class="filter-group-label">Hourly rate</span>
+      <button type="button" class="filter-chip filter-rate active" data-rate="all">Any rate</button>
+      <button type="button" class="filter-chip filter-rate" data-rate="0-25">Under $25</button>
+      <button type="button" class="filter-chip filter-rate" data-rate="25-50">$25–50</button>
+      <button type="button" class="filter-chip filter-rate" data-rate="50-100">$50–100</button>
+      <button type="button" class="filter-chip filter-rate" data-rate="100+">$100+</button>
+    </div>
+
+    <div class="talent-grid" id="talentGrid">
+
+      <div class="card talent-card"
+           data-name="priya nair"
+           data-title="product designer"
+           data-bio="product designer fintech saas figma"
+           data-category="design"
+           data-rating="4.9"
+           data-rate="35"
+           data-skills="figma ui/ux prototyping">
+        <div class="talent-card-top">
+          <div class="talent-avatar">PN</div>
+          <div>
+            <h3>Priya Nair</h3>
+            <div class="talent-title">Product Designer</div>
+          </div>
+        </div>
+        <div class="talent-meta">
+          <span class="talent-rating"><span class="stars">★</span> 4.9 <span style="color:var(--slate-light)">(38)</span></span>
+          <span class="talent-rate">$35/hr</span>
+        </div>
+        <div class="talent-tags">
+          <span class="tag">Figma</span>
+          <span class="tag">UI/UX</span>
+          <span class="tag">Prototyping</span>
+        </div>
+        <p class="talent-bio">Product designer with 6 years across fintech and SaaS. Clean, accessible interfaces backed by research.</p>
+        <a href="freelancer-profile.html" class="btn btn-outline btn-sm">View Profile</a>
+      </div>
+
+      <div class="card talent-card"
+           data-name="marcus chen"
+           data-title="fullstack developer"
+           data-bio="fastapi postgres react apis backend"
+           data-category="web-dev"
+           data-rating="4.8"
+           data-rate="55"
+           data-skills="fastapi postgresql react">
+        <div class="talent-card-top">
+          <div class="talent-avatar">MC</div>
+          <div>
+            <h3>Marcus Chen</h3>
+            <div class="talent-title">Full-Stack Developer</div>
+          </div>
+        </div>
+        <div class="talent-meta">
+          <span class="talent-rating"><span class="stars">★</span> 4.8 <span style="color:var(--slate-light)">(52)</span></span>
+          <span class="talent-rate">$55/hr</span>
+        </div>
+        <div class="talent-tags">
+          <span class="tag">FastAPI</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">React</span>
+        </div>
+        <p class="talent-bio">Builds production APIs and dashboards. Strong on auth, payments, and clean REST design.</p>
+        <a href="freelancer-profile.html" class="btn btn-outline btn-sm">View Profile</a>
+      </div>
+
+      <div class="card talent-card"
+           data-name="aisha okonkwo"
+           data-title="technical writer"
+           data-bio="docs blogs developer content technical"
+           data-category="writing"
+           data-rating="4.7"
+           data-rate="28"
+           data-skills="content technical docs">
+        <div class="talent-card-top">
+          <div class="talent-avatar">AO</div>
+          <div>
+            <h3>Aisha Okonkwo</h3>
+            <div class="talent-title">Technical Writer</div>
+          </div>
+        </div>
+        <div class="talent-meta">
+          <span class="talent-rating"><span class="stars">★</span> 4.7 <span style="color:var(--slate-light)">(21)</span></span>
+          <span class="talent-rate">$28/hr</span>
+        </div>
+        <div class="talent-tags">
+          <span class="tag">Content</span>
+          <span class="tag">Technical</span>
+          <span class="tag">Docs</span>
+        </div>
+        <p class="talent-bio">Turns complex backend concepts into clear blogs and docs for developer audiences.</p>
+        <a href="freelancer-profile.html" class="btn btn-outline btn-sm">View Profile</a>
+      </div>
+
+      <div class="card talent-card"
+           data-name="jordan lee"
+           data-title="mobile engineer"
+           data-bio="react native ios android flutter apps"
+           data-category="mobile"
+           data-rating="4.6"
+           data-rate="48"
+           data-skills="react native flutter ios">
+        <div class="talent-card-top">
+          <div class="talent-avatar">JL</div>
+          <div>
+            <h3>Jordan Lee</h3>
+            <div class="talent-title">Mobile Engineer</div>
+          </div>
+        </div>
+        <div class="talent-meta">
+          <span class="talent-rating"><span class="stars">★</span> 4.6 <span style="color:var(--slate-light)">(17)</span></span>
+          <span class="talent-rate">$48/hr</span>
+        </div>
+        <div class="talent-tags">
+          <span class="tag">React Native</span>
+          <span class="tag">Flutter</span>
+          <span class="tag">iOS</span>
+        </div>
+        <p class="talent-bio">Ships polished cross-platform apps with offline sync and thoughtful UX details.</p>
+        <a href="freelancer-profile.html" class="btn btn-outline btn-sm">View Profile</a>
+      </div>
+
+      <div class="card talent-card"
+           data-name="sofia martinez"
+           data-title="brand & ui designer"
+           data-bio="branding illustration design systems"
+           data-category="design"
+           data-rating="5.0"
+           data-rate="42"
+           data-skills="branding figma illustration">
+        <div class="talent-card-top">
+          <div class="talent-avatar">SM</div>
+          <div>
+            <h3>Sofia Martinez</h3>
+            <div class="talent-title">Brand & UI Designer</div>
+          </div>
+        </div>
+        <div class="talent-meta">
+          <span class="talent-rating"><span class="stars">★</span> 5.0 <span style="color:var(--slate-light)">(29)</span></span>
+          <span class="talent-rate">$42/hr</span>
+        </div>
+        <div class="talent-tags">
+          <span class="tag">Branding</span>
+          <span class="tag">Figma</span>
+          <span class="tag">Illustration</span>
+        </div>
+        <p class="talent-bio">Crafts memorable visual systems for startups — logos, UI kits, and launch assets.</p>
+        <a href="freelancer-profile.html" class="btn btn-outline btn-sm">View Profile</a>
+      </div>
+
+      <div class="card talent-card"
+           data-name="dev patel"
+           data-title="backend engineer"
+           data-bio="python django aws microservices"
+           data-category="web-dev"
+           data-rating="4.4"
+           data-rate="62"
+           data-skills="python django aws">
+        <div class="talent-card-top">
+          <div class="talent-avatar">DP</div>
+          <div>
+            <h3>Dev Patel</h3>
+            <div class="talent-title">Backend Engineer</div>
+          </div>
+        </div>
+        <div class="talent-meta">
+          <span class="talent-rating"><span class="stars">★</span> 4.4 <span style="color:var(--slate-light)">(14)</span></span>
+          <span class="talent-rate">$62/hr</span>
+        </div>
+        <div class="talent-tags">
+          <span class="tag">Python</span>
+          <span class="tag">Django</span>
+          <span class="tag">AWS</span>
+        </div>
+        <p class="talent-bio">Scalable services, queues, and cloud infra. Comfortable owning backend from schema to deploy.</p>
+        <a href="freelancer-profile.html" class="btn btn-outline btn-sm">View Profile</a>
+      </div>
+
+      <div class="card talent-card"
+           data-name="nina brook"
+           data-title="ux researcher"
+           data-bio="research interviews usability testing"
+           data-category="design"
+           data-rating="4.9"
+           data-rate="40"
+           data-skills="research usability interviews">
+        <div class="talent-card-top">
+          <div class="talent-avatar">NB</div>
+          <div>
+            <h3>Nina Brook</h3>
+            <div class="talent-title">UX Researcher</div>
+          </div>
+        </div>
+        <div class="talent-meta">
+          <span class="talent-rating"><span class="stars">★</span> 4.9 <span style="color:var(--slate-light)">(33)</span></span>
+          <span class="talent-rate">$40/hr</span>
+        </div>
+        <div class="talent-tags">
+          <span class="tag">Research</span>
+          <span class="tag">Usability</span>
+          <span class="tag">Interviews</span>
+        </div>
+        <p class="talent-bio">Runs lean research sprints that de-risk product decisions before you ship.</p>
+        <a href="freelancer-profile.html" class="btn btn-outline btn-sm">View Profile</a>
+      </div>
+
+      <div class="card talent-card"
+           data-name="owen reyes"
+           data-title="junior frontend developer"
+           data-bio="html css javascript landing pages"
+           data-category="web-dev"
+           data-rating="4.2"
+           data-rate="22"
+           data-skills="html css javascript">
+        <div class="talent-card-top">
+          <div class="talent-avatar">OR</div>
+          <div>
+            <h3>Owen Reyes</h3>
+            <div class="talent-title">Junior Frontend Developer</div>
+          </div>
+        </div>
+        <div class="talent-meta">
+          <span class="talent-rating"><span class="stars">★</span> 4.2 <span style="color:var(--slate-light)">(9)</span></span>
+          <span class="talent-rate">$22/hr</span>
+        </div>
+        <div class="talent-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+        </div>
+        <p class="talent-bio">Pixel-accurate landing pages and small JS widgets. Fast turnaround, clear communication.</p>
+        <a href="freelancer-profile.html" class="btn btn-outline btn-sm">View Profile</a>
+      </div>
+
+      <div class="card talent-card"
+           data-name="elena vostok"
+           data-title="senior architect"
+           data-bio="system design microservices kubernetes consulting"
+           data-category="web-dev"
+           data-rating="4.9"
+           data-rate="120"
+           data-skills="architecture system design kubernetes">
+        <div class="talent-card-top">
+          <div class="talent-avatar">EV</div>
+          <div>
+            <h3>Elena Vostok</h3>
+            <div class="talent-title">Senior Software Architect</div>
+          </div>
+        </div>
+        <div class="talent-meta">
+          <span class="talent-rating"><span class="stars">★</span> 4.9 <span style="color:var(--slate-light)">(61)</span></span>
+          <span class="talent-rate">$120/hr</span>
+        </div>
+        <div class="talent-tags">
+          <span class="tag">Architecture</span>
+          <span class="tag">System Design</span>
+          <span class="tag">AWS</span>
+        </div>
+        <p class="talent-bio">Advises teams on scalable architecture, reviews PRs, and unblocks complex integrations.</p>
+        <a href="freelancer-profile.html" class="btn btn-outline btn-sm">View Profile</a>
+      </div>
+
+      <p id="noTalentResults">No freelancers match your filters. Try clearing a filter or searching a different skill.</p>
+    </div>
+  </main>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/talent.js"></script>
+</body>
+</html>

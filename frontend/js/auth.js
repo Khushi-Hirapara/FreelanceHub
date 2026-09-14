@@ -29,7 +29,6 @@ if (loginForm) {
 
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    const role = getSelectedRole('loginForm') || document.querySelector('.role-btn.active')?.dataset.role;
 
     if (!email || !password) {
       errorBox.textContent = 'Please fill in both fields.';
@@ -41,9 +40,10 @@ if (loginForm) {
     submitBtn.disabled = true;
 
     try {
+      // Email + password only — role comes from the account
       const data = await api('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password, role }),
+        body: JSON.stringify({ email, password }),
       });
       Auth.setSession(data.access_token, data.user);
       showToast(`Welcome back, ${data.user.name.split(' ')[0]}!`);
@@ -60,6 +60,10 @@ if (loginForm) {
 
 const registerForm = document.getElementById('registerForm');
 if (registerForm) {
+  if (Auth.isLoggedIn()) {
+    window.location.href = dashboardForRole(Auth.getUser()?.role);
+  }
+
   registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -69,6 +73,10 @@ if (registerForm) {
     const confirmPassword = document.getElementById('confirmPassword').value;
     const role = getSelectedRole('roleSelect');
 
+    if (!fname || !email) {
+      showToast('Please fill in your name and email.', 'error');
+      return;
+    }
     if (password !== confirmPassword) {
       showToast('Passwords do not match.', 'error');
       return;

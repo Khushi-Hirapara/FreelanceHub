@@ -154,39 +154,7 @@
       <input type="text" placeholder="Search conversations...">
     </div>
     <div class="conv-list" id="convList">
-      <div class="conv-item active" data-name="Marcus Thorne">
-        <div class="conv-avatar">MT</div>
-        <div class="conv-info">
-          <div class="conv-top-row"><h4>Marcus Thorne</h4><span class="conv-time">10m</span></div>
-          <p class="conv-preview">Sounds good — can you share the API docs?</p>
-          <span class="conv-project-tag">FastAPI backend project</span>
-        </div>
-      </div>
-      <div class="conv-item" data-name="Dana Kessler">
-        <div class="conv-avatar">DK</div>
-        <div class="conv-info">
-          <div class="conv-top-row"><h4>Dana Kessler</h4><span class="conv-time">2h</span></div>
-          <p class="conv-preview">The revised mockups look great, thank you!</p>
-          <span class="conv-project-tag">Fintech UI kit</span>
-        </div>
-        <div class="unread-dot"></div>
-      </div>
-      <div class="conv-item" data-name="NovaTech Inc.">
-        <div class="conv-avatar">NT</div>
-        <div class="conv-info">
-          <div class="conv-top-row"><h4>NovaTech Inc.</h4><span class="conv-time">1d</span></div>
-          <p class="conv-preview">We'd like to extend the deadline by a week.</p>
-          <span class="conv-project-tag">Blog series</span>
-        </div>
-      </div>
-      <div class="conv-item" data-name="Owen Reyes">
-        <div class="conv-avatar">OR</div>
-        <div class="conv-info">
-          <div class="conv-top-row"><h4>Owen Reyes</h4><span class="conv-time">2d</span></div>
-          <p class="conv-preview">Final files uploaded, let me know if all's good.</p>
-          <span class="conv-project-tag">Photo editing</span>
-        </div>
-      </div>
+      <p style="padding:16px;color:var(--slate);font-size:0.9rem;">Loading conversations…</p>
     </div>
   </div>
 
@@ -194,44 +162,17 @@
   <div class="chat-panel">
     <div class="chat-header">
       <div class="chat-header-info">
-        <div class="conv-avatar" style="width:36px;height:36px;">MT</div>
+        <div class="conv-avatar" style="width:36px;height:36px;">—</div>
         <div>
-          <h3 id="chatName">Marcus Thorne</h3>
-          <span>Re: FastAPI backend project</span>
+          <h3 id="chatName">Select a conversation</h3>
+          <span>Your messages will appear here</span>
         </div>
       </div>
-      <a href="client-dashboard.html" class="btn btn-outline btn-sm">View Project</a>
+      <a href="find-talent.html" class="btn btn-outline btn-sm" id="chatBrowseLink">Browse</a>
     </div>
 
     <div class="chat-body" id="chatBody">
-      <div class="day-divider">Today</div>
-
-      <div class="msg-bubble received">
-        Hi! Thanks for your proposal — I liked your approach to the webhook sync.
-        <span class="msg-time">10:02 AM</span>
-      </div>
-      <div class="msg-bubble sent">
-        Thank you! Happy to walk through the architecture if useful before we start.
-        <span class="msg-time">10:05 AM</span>
-      </div>
-      <div class="msg-bubble received">
-        That'd be great. Also — do you have experience with calendar API integrations?
-        <span class="msg-time">10:07 AM</span>
-      </div>
-      <div class="msg-bubble sent">
-        Yes, built two similar integrations with Google Calendar API and Cal.com previously.
-        <span class="msg-time">10:09 AM</span>
-      </div>
-
-      <div class="msg-attachment">
-        <span class="file-icon">PDF</span>
-        <div>project-requirements-v2.pdf<br><span style="color:var(--slate-light); font-size:0.75rem;">248 KB</span></div>
-      </div>
-
-      <div class="msg-bubble received">
-        Sounds good — can you share the API docs?
-        <span class="msg-time">10:24 AM</span>
-      </div>
+      <div class="day-divider">No conversation selected</div>
     </div>
 
     <div class="chat-input-bar">

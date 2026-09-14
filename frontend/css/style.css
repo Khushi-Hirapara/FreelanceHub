@@ -137,6 +137,12 @@
    .nav-actions { display: flex; align-items: center; gap: var(--space-3); }
    .nav-actions .btn-ghost { color: rgba(247,245,240,0.75); }
    .nav-actions .btn-ghost:hover { color: var(--paper); }
+   .nav-user {
+     color: rgba(247,245,240,0.7);
+     font-size: 0.9rem;
+     font-weight: 500;
+     white-space: nowrap;
+   }
    
    .nav-toggle { display: none; }
    

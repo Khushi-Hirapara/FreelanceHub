@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
   requireAuth(['freelancer']);
 
   const params = new URLSearchParams(window.location.search);
-  const projectId = Number(params.get('id'));
+  const projectId = Number(params.get('project_id') || params.get('id'));
   const coverLetter = document.getElementById('coverLetter');
   const charCount = document.getElementById('charCount');
   const milestoneList = document.getElementById('milestoneList');
@@ -253,6 +253,11 @@ async function loadProjectBrief(projectId) {
       clientBox.querySelector('h5').textContent = project.client.name;
       clientBox.querySelector('span').textContent =
         `Client · ${project.client.projects_done || 0} projects posted`;
+    }
+
+    const budgetHint = document.getElementById('budgetHint');
+    if (budgetHint) {
+      budgetHint.textContent = `Client's budget: ${formatMoney(project.budget_min)}–${formatMoney(project.budget_max).replace('$', '')}`;
     }
   } catch (err) {
     showToast(err.message || 'Could not load project.', 'error');

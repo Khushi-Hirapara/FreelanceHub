@@ -108,18 +108,18 @@
     <!-- Profile summary card -->
     <div class="profile-sticky">
       <div class="card profile-card">
-        <div class="avatar-lg">PN</div>
-        <h2>Priya Nair</h2>
-        <div class="role-tag">Freelancer · Product Designer</div>
-        <div class="profile-rating"><span class="stars">★★★★★</span> 4.9 (38 reviews)</div>
+        <div class="avatar-lg">—</div>
+        <h2>Loading…</h2>
+        <div class="role-tag">Profile</div>
+        <div class="profile-rating"><span class="stars">★★★★★</span> —</div>
 
         <div class="profile-stats-mini">
-          <div><div class="val">27</div><div class="label">Projects Done</div></div>
-          <div><div class="val">98%</div><div class="label">On-time</div></div>
+          <div><div class="val">—</div><div class="label">Projects Done</div></div>
+          <div><div class="val">—</div><div class="label">On-time</div></div>
         </div>
 
-        <button class="btn btn-outline upload-btn btn-sm">Change Photo</button>
-        <button class="btn btn-primary btn-sm" style="width:100%;">View Public Profile</button>
+        <button class="btn btn-outline upload-btn btn-sm" type="button" disabled>Change Photo</button>
+        <button class="btn btn-primary btn-sm" style="width:100%;" type="button" disabled>View Public Profile</button>
       </div>
     </div>
 
@@ -139,21 +139,21 @@
           <div class="form-2col">
             <div class="form-group">
               <label for="fullName">Full name</label>
-              <input type="text" id="fullName" value="Priya Nair">
+              <input type="text" id="fullName" value="" placeholder="Your full name">
             </div>
             <div class="form-group">
               <label for="email">Email address</label>
-              <input type="email" id="email" value="priya.nair@example.com">
+              <input type="email" id="email" value="" placeholder="you@example.com">
             </div>
           </div>
           <div class="form-2col">
             <div class="form-group">
               <label for="location">Location</label>
-              <input type="text" id="location" value="Bengaluru, India">
+              <input type="text" id="location" value="" placeholder="City, Country">
             </div>
             <div class="form-group">
               <label for="hourlyRate">Hourly rate ($)</label>
-              <input type="number" id="hourlyRate" value="35">
+              <input type="number" id="hourlyRate" value="" placeholder="0">
             </div>
           </div>
           <div class="form-actions">
@@ -168,14 +168,11 @@
           <h3>Skills & Bio</h3>
           <div class="form-group">
             <label for="bio">About you</label>
-            <textarea id="bio">Product designer with 6 years of experience across fintech and SaaS. I focus on clean, accessible interfaces backed by research.</textarea>
+            <textarea id="bio" placeholder="Tell clients about your experience…"></textarea>
           </div>
           <div class="form-group">
             <label>Skills</label>
             <div class="skill-input-wrap" id="profileSkillWrap">
-              <span class="skill-chip">Figma <button type="button">&times;</button></span>
-              <span class="skill-chip">UI/UX <button type="button">&times;</button></span>
-              <span class="skill-chip">Prototyping <button type="button">&times;</button></span>
               <input type="text" id="profileSkillInput" placeholder="Add a skill and press Enter">
             </div>
           </div>
@@ -189,13 +186,10 @@
       <div class="tab-panel" id="tab-portfolio">
         <div class="card form-card">
           <h3>Portfolio Showcase</h3>
-          <div class="portfolio-grid">
-            <div class="portfolio-item"><div class="overlay">Fintech Onboarding Flow</div></div>
-            <div class="portfolio-item"><div class="overlay">Booking App Redesign</div></div>
-            <div class="portfolio-item"><div class="overlay">SaaS Dashboard UI</div></div>
-            <div class="portfolio-add">+</div>
+          <div class="portfolio-grid" id="portfolioGrid">
+            <div class="portfolio-add" title="Portfolio uploads coming soon">+</div>
           </div>
-          <p style="color:var(--slate); font-size:0.85rem;">Upload project samples so clients can see your past work before hiring.</p>
+          <p style="color:var(--slate); font-size:0.85rem;">No portfolio items yet. Upload support will be added in a later release.</p>
         </div>
       </div>
 

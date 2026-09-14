@@ -146,7 +146,7 @@
 <header class="hero">
   <div class="container">
     <div>
-      <span class="hero-eyebrow">// 4,200 projects posted this month</span>
+      <span class="hero-eyebrow" id="heroEyebrow">// Loading live marketplace stats…</span>
       <h1>Post a brief.<br>Find the <em>right</em> hands<br>to build it.</h1>
       <p>FreelanceHub connects clients with vetted freelancers through transparent bidding, escrow-backed payments, and a review trail you can actually trust.</p>
       <div class="hero-ctas">
@@ -154,23 +154,23 @@
         <a href="pages/freelancer-dashboard.html" class="btn btn-outline" style="border-color: rgba(247,245,240,0.4); color: var(--paper);">Browse Work</a>
       </div>
       <div class="hero-stats">
-        <div><div class="stat-num">12k+</div><div class="stat-label">Freelancers</div></div>
-        <div><div class="stat-num">98%</div><div class="stat-label">On-time delivery</div></div>
-        <div><div class="stat-num">$2.4M</div><div class="stat-label">Paid out safely</div></div>
+        <div><div class="stat-num" id="statFreelancers">—</div><div class="stat-label">Freelancers</div></div>
+        <div><div class="stat-num" id="statOnTime">—</div><div class="stat-label">On-time delivery</div></div>
+        <div><div class="stat-num" id="statPaid">—</div><div class="stat-label">Accepted bids</div></div>
       </div>
     </div>
     <div class="match-visual">
       <div class="match-card brief">
-        <span class="eyebrow">Brief #0192</span>
-        <h5>Redesign onboarding flow</h5>
-        <p>Budget: $1,200 · Figma required</p>
+        <span class="eyebrow" id="matchBriefLabel">Latest brief</span>
+        <h5 id="matchBriefTitle">Loading…</h5>
+        <p id="matchBriefMeta">Fetching open projects</p>
       </div>
       <div class="match-line"></div>
       <div class="match-pin">MATCH</div>
       <div class="match-card skill">
-        <span class="eyebrow">Freelancer</span>
-        <h5>Priya N. — Product Designer</h5>
-        <p>★ 4.9 · UX/UI · 6 yrs exp</p>
+        <span class="eyebrow">Client</span>
+        <h5 id="matchClientName">—</h5>
+        <p id="matchClientMeta">Live from FreelanceHub</p>
       </div>
     </div>
   </div>
@@ -212,28 +212,8 @@
       <span class="eyebrow">Open right now</span>
       <h2>Fresh briefs on the board</h2>
     </div>
-    <div class="listings-grid">
-      <div class="card listing-card">
-        <div class="listing-top"><span class="tag">Web Dev</span><span class="listing-budget">$800–1,200</span></div>
-        <h3>FastAPI backend for booking app</h3>
-        <p>Need REST APIs for a scheduling system with PostgreSQL and JWT auth.</p>
-        <div class="listing-tags"><span class="tag">FastAPI</span><span class="tag">PostgreSQL</span></div>
-        <div class="listing-foot"><span>12 proposals</span><span>Posted 2h ago</span></div>
-      </div>
-      <div class="card listing-card">
-        <div class="listing-top"><span class="tag">Design</span><span class="listing-budget">$400–600</span></div>
-        <h3>Mobile app UI kit — fintech</h3>
-        <p>Looking for clean, accessible screens for a savings app, Figma source files.</p>
-        <div class="listing-tags"><span class="tag">Figma</span><span class="tag">UI/UX</span></div>
-        <div class="listing-foot"><span>8 proposals</span><span>Posted 5h ago</span></div>
-      </div>
-      <div class="card listing-card">
-        <div class="listing-top"><span class="tag">Writing</span><span class="listing-budget">$150–300</span></div>
-        <h3>Technical blog series (5 posts)</h3>
-        <p>Explain backend architecture concepts for a developer audience.</p>
-        <div class="listing-tags"><span class="tag">Content</span><span class="tag">Technical</span></div>
-        <div class="listing-foot"><span>21 proposals</span><span>Posted 1d ago</span></div>
-      </div>
+    <div class="listings-grid" id="homeListings">
+      <p style="color:var(--slate);grid-column:1/-1;">Loading open projects…</p>
     </div>
   </div>
 </section>
@@ -278,5 +258,8 @@
   <div class="footer-bottom">© 2026 FreelanceHub — Academic Project</div>
 </footer>
 
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+<script src="js/home.js"></script>
 </body>
 </html>

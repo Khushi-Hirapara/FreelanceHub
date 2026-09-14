@@ -118,18 +118,16 @@
 <div class="dash-layout">
   <aside class="sidebar">
     <div class="sidebar-profile">
-      <div class="avatar">MT</div>
+      <div class="avatar">—</div>
       <div>
-        <h4>Marcus Thorne</h4>
-        <span>Client · NovaTech Inc.</span>
+        <h4>Loading…</h4>
+        <span>Client</span>
       </div>
     </div>
     <nav class="sidebar-nav">
       <a href="client-dashboard.html" class="active"><span class="icon">#</span> My Projects</a>
       <a href="project-posting.html"><span class="icon">#</span> Post a Project</a>
-      <a href="#"><span class="icon">#</span> Proposals Received</a>
       <a href="messaging.html"><span class="icon">#</span> Messages</a>
-      <a href="#"><span class="icon">#</span> Payments</a>
       <a href="profile.html"><span class="icon">#</span> Profile</a>
     </nav>
   </aside>
@@ -137,8 +135,8 @@
   <main class="dash-main">
     <div class="dash-header">
       <div>
-        <h1>Welcome back, Marcus</h1>
-        <p>You have 3 active projects and 9 new proposals to review.</p>
+        <h1>Welcome back</h1>
+        <p>Loading your dashboard…</p>
       </div>
       <a href="project-posting.html" class="btn btn-primary">+ Post a Project</a>
     </div>
@@ -146,23 +144,23 @@
     <div class="stats-row">
       <div class="card stat-card">
         <span class="eyebrow">Active Projects</span>
-        <div class="val">3</div>
-        <div class="delta">1 in review</div>
+        <div class="val">—</div>
+        <div class="delta">Loading…</div>
       </div>
       <div class="card stat-card">
         <span class="eyebrow">New Proposals</span>
-        <div class="val">9</div>
-        <div class="delta">across 2 projects</div>
+        <div class="val">—</div>
+        <div class="delta">Loading…</div>
       </div>
       <div class="card stat-card">
         <span class="eyebrow">Total Spent</span>
-        <div class="val">$4,120</div>
-        <div class="delta">since joining</div>
+        <div class="val">—</div>
+        <div class="delta">Loading…</div>
       </div>
       <div class="card stat-card">
-        <span class="eyebrow">Avg. Rating Given</span>
-        <div class="val">4.7</div>
-        <div class="delta">6 reviews left</div>
+        <span class="eyebrow">Avg. Rating</span>
+        <div class="val">—</div>
+        <div class="delta">Loading…</div>
       </div>
     </div>
 
@@ -172,66 +170,17 @@
           <h2>My Active Projects</h2>
           <a href="project-posting.html" class="btn btn-outline btn-sm">Post New</a>
         </div>
-
-        <div class="card myproject-item">
-          <div class="myproject-top">
-            <h3>FastAPI backend for booking app</h3>
-            <span class="status-badge status-open">Open for bids</span>
-          </div>
-          <p class="myproject-meta">Budget: $800–1,200 · Posted 2h ago</p>
-          <div class="myproject-foot">
-            <span>12 proposals received</span>
-            <a href="proposal-submission.html" class="btn btn-outline btn-sm">Review Proposals</a>
-          </div>
-        </div>
-
-        <div class="card myproject-item">
-          <div class="myproject-top">
-            <h3>Landing page redesign</h3>
-            <span class="status-badge status-progress">In progress</span>
-          </div>
-          <p class="myproject-meta">Freelancer: Priya N. · Due in 5 days</p>
-          <div class="myproject-foot">
-            <span>Contract #CT-0043</span>
-            <a href="messaging.html" class="btn btn-outline btn-sm">Message Freelancer</a>
-          </div>
-        </div>
-
-        <div class="card myproject-item">
-          <div class="myproject-top">
-            <h3>Product photography editing (40 images)</h3>
-            <span class="status-badge status-review">Awaiting review</span>
-          </div>
-          <p class="myproject-meta">Freelancer: Owen R. · Delivered 1 day ago</p>
-          <div class="myproject-foot">
-            <span>Contract #CT-0039</span>
-            <a href="#" class="btn btn-outline btn-sm">Approve & Pay</a>
-          </div>
+        <div id="clientProjectList">
+          <p style="color:var(--slate);padding:12px 0;">Loading your projects…</p>
         </div>
       </div>
 
       <div>
         <div class="section-title"><h2>Recent Activity</h2></div>
-        <div class="card activity-card">
+        <div class="card activity-card" id="activityFeed">
           <div class="activity-item">
             <div class="activity-dot"></div>
-            <div>Priya N. sent a new message.<span class="time">10 min ago</span></div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-dot"></div>
-            <div>New proposal on "FastAPI backend".<span class="time">1 hour ago</span></div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-dot"></div>
-            <div>Owen R. delivered final files.<span class="time">1 day ago</span></div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-dot"></div>
-            <div>Payment of $480 released to Owen R.<span class="time">1 day ago</span></div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-dot"></div>
-            <div>Contract #CT-0043 marked in progress.<span class="time">3 days ago</span></div>
+            <div>Loading activity…<span class="time">Just now</span></div>
           </div>
         </div>
       </div>
