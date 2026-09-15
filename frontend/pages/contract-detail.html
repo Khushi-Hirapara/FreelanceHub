@@ -6,44 +6,92 @@
 <title>Contract — FreelanceHub</title>
 <link rel="stylesheet" href="../css/style.css">
 <style>
-  .detail-page { max-width: 860px; margin: 0 auto; padding: var(--space-5) var(--space-4) var(--space-6); }
   .detail-card { padding: var(--space-5); margin-bottom: var(--space-4); }
   .detail-card h1 { font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: 8px; }
   .detail-card h2 { font-family: var(--font-display); font-size: 1.15rem; margin: var(--space-4) 0 8px; }
   .muted { color: var(--slate); }
+  .journey {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin: var(--space-4) 0;
+  }
+  .journey span {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 8px 4px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    color: var(--slate-light);
+    background: var(--paper);
+  }
+  .journey span.on {
+    border-color: var(--amber-deep);
+    background: rgba(232,163,61,0.12);
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .journey span.done {
+    border-color: rgba(61,131,97,0.35);
+    background: rgba(61,131,97,0.1);
+    color: var(--green);
+  }
   .money-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: var(--space-3); }
-  .money-grid div { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
-  .money-grid span { display: block; color: var(--slate); font-size: 0.78rem; font-family: var(--font-mono); margin-bottom: 4px; }
-  .money-grid strong { font-size: 1.05rem; }
+  .money-grid div, .dates-grid div { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+  .money-grid span, .dates-grid span { display: block; color: var(--slate); font-size: 0.78rem; font-family: var(--font-mono); margin-bottom: 4px; }
+  .money-grid strong, .dates-grid strong { font-size: 1.05rem; }
+  .dates-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: var(--space-3); }
   .people { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .people div { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
   .status-badge { font-family: var(--font-mono); font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; }
   .status-pending, .status-disputed { background: rgba(232,163,61,0.15); color: var(--amber-deep); }
   .status-funded, .status-in_progress, .status-submitted { background: rgba(61,90,160,0.12); color: #2c4a8a; }
-  .status-approved, .status-completed { background: rgba(61,131,97,0.12); color: var(--green); }
+  .status-approved, .status-completed, .status-released { background: rgba(61,131,97,0.12); color: var(--green); }
+  .ms-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+  .ms-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+  .progress { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; margin: 10px 0; }
+  .progress span { display: block; height: 100%; background: var(--green); }
+  .ms-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .review-stars { color: var(--amber-deep); font-family: var(--font-mono); font-size: 0.85rem; }
+  .ms-form { display: grid; gap: 8px; margin-top: 12px; }
+  .ms-form input, .ms-form textarea, .ms-form select { width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 10px; font: inherit; }
   .status-cancelled { background: rgba(74,82,104,0.12); color: var(--slate); }
   .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: var(--space-4); }
-  @media (max-width: 700px) { .money-grid, .people { grid-template-columns: 1fr; } }
+  .pay-box { margin-top: var(--space-4); padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius); background: rgba(232,163,61,0.08); }
+  .dispute-box { margin-top: var(--space-4); padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius); }
+  .dispute-box form { display: grid; gap: 8px; margin-top: 10px; }
+  .dispute-box input, .dispute-box textarea, .dispute-box select { width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 10px; font: inherit; }
+  .dispute-item { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
+  @media (max-width: 900px) {
+    .journey { grid-template-columns: 1fr 1fr; }
+    .money-grid, .people, .dates-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
 <nav class="navbar">
   <div class="container">
-    <a href="../index.html" class="logo">Freelance<span>Hub</span></a>
-    <div class="nav-links"></div>
+    <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
+    <ul class="nav-links"></ul>
     <div class="nav-actions"></div>
-    <button class="mobile-menu" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
-<div class="detail-page">
-  <p style="margin-bottom:var(--space-3);"><a href="contracts.html">← Back to contracts</a></p>
-  <div class="card detail-card" id="contractBody">
-    <p class="muted">Loading contract…</p>
-  </div>
+<div class="dash-layout">
+  <aside class="sidebar" data-static-sidebar></aside>
+  <main class="dash-main">
+    <p style="margin-bottom:var(--space-3);"><a href="contracts.html">← Back to contracts</a></p>
+    <div class="card detail-card" id="contractBody">
+      <p class="muted">Loading contract…</p>
+    </div>
+  </main>
 </div>
 
 <script src="../js/api.js"></script>
+<script src="../js/attachments.js"></script>
 <script src="../js/main.js"></script>
 <script src="../js/contract-detail.js"></script>
 </body>

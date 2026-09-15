@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
 from app.deps import get_current_user
-from app.models import Project, ProjectStatus, Proposal, ProposalStatus, User, UserRole
+from app.models import Payment, PaymentStatus, Project, ProjectStatus, Proposal, ProposalStatus, User, UserRole
 
 router = APIRouter(tags=["Stats"])
 
@@ -56,7 +56,15 @@ def dashboard_summary(
 
         pending = [p for p in proposals if p.status == ProposalStatus.pending]
         accepted = [p for p in proposals if p.status == ProposalStatus.accepted]
-        earned = sum(p.bid_amount for p in accepted)
+        payments = db.scalars(
+            select(Payment).where(Payment.freelancer_id == current_user.id)
+        ).all()
+        paid_payments = [p for p in payments if p.status == PaymentStatus.paid]
+        pending_payments = [
+            p for p in payments if p.status in (PaymentStatus.pending, PaymentStatus.processing)
+        ]
+        paid_earnings = sum(float(p.freelancer_amount) for p in paid_payments)
+        pending_earnings = sum(float(p.freelancer_amount) for p in pending_payments)
 
         open_projects = db.scalar(
             select(func.count()).select_from(Project).where(Project.status == ProjectStatus.open)
@@ -76,7 +84,10 @@ def dashboard_summary(
             "active_bids": len(pending),
             "awaiting_reply": len(pending),
             "active_contracts": len(accepted),
-            "earned": earned,
+            "earned": paid_earnings,
+            "total_earnings": paid_earnings,
+            "paid_earnings": paid_earnings,
+            "pending_earnings": pending_earnings,
             "rating_avg": current_user.rating_avg,
             "rating_count": current_user.rating_count,
             "open_projects": open_projects,
@@ -104,6 +115,10 @@ def dashboard_summary(
         for prop in (p.proposals or [])
         if prop.status == ProposalStatus.accepted
     )
+    payments = db.scalars(select(Payment).where(Payment.client_id == current_user.id)).all()
+    paid_payments = [p for p in payments if p.status == PaymentStatus.paid]
+    open_payments = [p for p in payments if p.status in (PaymentStatus.pending, PaymentStatus.processing)]
+    total_spent = sum(float(p.amount) for p in paid_payments)
 
     activity = []
     recent_props = sorted(pending_proposals, key=lambda x: x.created_at, reverse=True)[:8]
@@ -121,7 +136,11 @@ def dashboard_summary(
         "role": "client",
         "active_projects": len(active),
         "new_proposals": len(pending_proposals),
-        "total_spent": accepted_spend,
+        "total_spent": total_spent,
+        "pending_payments": len(open_payments),
+        "pending_payment_amount": sum(float(p.amount) for p in open_payments),
+        "completed_payments": len(paid_payments),
+        "accepted_bid_total": accepted_spend,
         "rating_avg": current_user.rating_avg,
         "rating_count": current_user.rating_count,
         "activity": activity,

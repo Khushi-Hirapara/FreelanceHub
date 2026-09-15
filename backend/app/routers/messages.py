@@ -4,8 +4,10 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.deps import get_current_user
-from app.models import Conversation, Message, Project, User, utcnow
+from app.message_flow import mark_conversation_read, persist_message, serialize_message
+from app.models import Conversation, Message, Project, User
 from app.schemas import ConversationOut, MessageCreate, MessageOut, UserOut
+from app.ws_hub import hub
 
 router = APIRouter(tags=["Messages"])
 
@@ -121,20 +123,12 @@ def list_messages(
     if current_user.id not in (conversation.participant_one_id, conversation.participant_two_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
 
+    mark_conversation_read(db, conversation_id, current_user.id)
     messages = db.scalars(
         select(Message)
         .where(Message.conversation_id == conversation_id)
         .order_by(Message.created_at.asc())
     ).all()
-
-    # Mark received messages as read
-    unread = [m for m in messages if m.receiver_id == current_user.id and not m.is_read]
-    for msg in unread:
-        msg.is_read = True
-        db.add(msg)
-    if unread:
-        db.commit()
-
     return messages
 
 
@@ -148,26 +142,15 @@ def messages_by_query(
 
 
 @router.post("/messages", response_model=MessageOut, status_code=status.HTTP_201_CREATED)
-def send_message(
+async def send_message(
     payload: MessageCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    if payload.receiver_id == current_user.id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot message yourself")
-
-    receiver = db.get(User, payload.receiver_id)
-    if not receiver or not receiver.is_active:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Receiver not found")
-
     if payload.conversation_id:
         conversation = db.get(Conversation, payload.conversation_id)
         if not conversation:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found")
-        if current_user.id not in (conversation.participant_one_id, conversation.participant_two_id):
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
-        if payload.receiver_id not in (conversation.participant_one_id, conversation.participant_two_id):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Receiver not in conversation")
     else:
         conversation = get_or_create_conversation(
             db,
@@ -176,15 +159,16 @@ def send_message(
             payload.project_id,
         )
 
-    message = Message(
-        conversation_id=conversation.id,
-        sender_id=current_user.id,
+    message = persist_message(
+        db,
+        conversation=conversation,
+        sender=current_user,
         receiver_id=payload.receiver_id,
-        message_text=payload.message_text.strip(),
+        message_text=payload.message_text,
     )
-    conversation.updated_at = utcnow()
-    db.add(message)
-    db.add(conversation)
-    db.commit()
-    db.refresh(message)
+    # Keep open WebSocket clients in sync when the REST path is used.
+    await hub.broadcast(
+        conversation.id,
+        {"type": "message", "message": serialize_message(message)},
+    )
     return message

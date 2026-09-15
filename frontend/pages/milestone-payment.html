@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreelanceHub Pay — FreelanceHub</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .pay-page { max-width: 520px; margin: 0 auto; padding: var(--space-5) var(--space-4) var(--space-6); }
+  .pay-card { padding: var(--space-5); }
+  .pay-card h1 { font-family: var(--font-display); font-size: 1.8rem; text-align: center; margin-bottom: 4px; }
+  .demo-label {
+    display: block; text-align: center; margin: 8px auto var(--space-4);
+    font-family: var(--font-mono); font-size: 0.75rem; color: var(--amber-deep);
+    background: rgba(232,163,61,0.15); border-radius: 20px; padding: 6px 12px; width: fit-content;
+  }
+  .pay-row { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 0.95rem; }
+  .pay-row span { color: var(--slate); }
+  .method { margin: var(--space-4) 0; }
+  .method label { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .field { margin-bottom: 12px; }
+  .field span { display: block; font-size: 0.8rem; color: var(--slate); margin-bottom: 4px; }
+  .field input {
+    width: 100%; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 10px 12px; font: inherit; background: var(--paper);
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .pay-actions { display: flex; flex-direction: column; gap: 10px; margin-top: var(--space-4); }
+  .result { text-align: center; padding: var(--space-4) 0; }
+  .result h2 { font-family: var(--font-display); font-size: 1.6rem; margin-bottom: 8px; }
+  .ok { color: var(--green); }
+  .bad { color: #B23A3A; }
+  .tiny { margin-top: 10px; text-align: center; color: var(--slate); font-size: 0.78rem; }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="logo">Freelance<span>Hub</span></a>
+    <div class="nav-links"></div>
+    <div class="nav-actions"></div>
+    <button class="mobile-menu" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="pay-page">
+  <p style="margin-bottom:var(--space-3);"><a id="backLink" href="contracts.html">← Back to contract</a></p>
+  <div class="card pay-card" id="payBody">
+    <p style="color:var(--slate);">Loading payment…</p>
+  </div>
+</div>
+<script src="../js/api.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/milestone-payment.js"></script>
+</body>
+</html>

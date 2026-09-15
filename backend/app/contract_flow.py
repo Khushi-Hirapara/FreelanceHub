@@ -22,8 +22,7 @@ from app.models import (
 # Who may move a contract from -> to. Party checks happen separately.
 ALLOWED_TRANSITIONS: dict[ContractStatus, dict[ContractStatus, set[UserRole]]] = {
     ContractStatus.pending: {
-        # Recorded only. No charge is taken. UI does not expose a pay button.
-        ContractStatus.funded: {UserRole.admin},
+        # Funded only by the mock payment confirmation, never by a status patch.
         ContractStatus.cancelled: {UserRole.client, UserRole.admin},
     },
     ContractStatus.funded: {
@@ -112,10 +111,47 @@ def accept_proposal_and_create_contract(db: Session, proposal: Proposal, actor: 
     db.add(proposal)
     db.add(project)
     db.flush()
+    from app.milestone_flow import seed_from_proposal
+
+    seed_from_proposal(db, contract, proposal)
+    title = project.title
+    from app.notify import notify
+
+    notify(
+        db,
+        proposal.freelancer_id,
+        kind="proposal_accepted",
+        title="Proposal accepted",
+        message=f"Your proposal for “{title}” was accepted.",
+        related_type="contract",
+        related_id=contract.id,
+        actor_id=actor.id,
+    )
+    notify(
+        db,
+        proposal.freelancer_id,
+        kind="contract_created",
+        title="Contract created",
+        message=f"A contract is ready for “{title}”.",
+        related_type="contract",
+        related_id=contract.id,
+        actor_id=actor.id,
+    )
+    for other in others:
+        notify(
+            db,
+            other.freelancer_id,
+            kind="proposal_rejected",
+            title="Proposal not selected",
+            message=f"Another proposal was accepted for “{title}”.",
+            related_type="project",
+            related_id=project.id,
+            actor_id=actor.id,
+        )
     return contract
 
 
-def apply_contract_status(contract: Contract, actor: User, new_status: ContractStatus) -> None:
+def apply_contract_status(db: Session, contract: Contract, actor: User, new_status: ContractStatus) -> None:
     if not user_can_access_contract(actor, contract):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
 
@@ -135,10 +171,81 @@ def apply_contract_status(contract: Contract, actor: User, new_status: ContractS
         if actor.role == UserRole.freelancer and actor.id != contract.freelancer_id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not your contract")
 
+    previous = contract.status
+    if new_status in (ContractStatus.approved, ContractStatus.completed):
+        complete_contract(contract)
+        _notify_completed(db, contract, actor)
+        return
+
     contract.status = new_status
-    today = date.today()
     if new_status == ContractStatus.in_progress and contract.start_date is None:
-        contract.start_date = today
-    if new_status == ContractStatus.completed:
-        contract.end_date = today
+        contract.start_date = date.today()
     contract.updated_at = utcnow()
+    if new_status == ContractStatus.disputed:
+        _notify_dispute(db, contract, actor, opened=True)
+    elif previous == ContractStatus.disputed:
+        _notify_dispute(db, contract, actor, opened=False)
+
+
+def complete_contract(contract: Contract) -> None:
+    """Approve-and-complete. Reviews stay closed until this runs."""
+    if contract.status == ContractStatus.completed:
+        return
+    contract.status = ContractStatus.completed
+    contract.end_date = date.today()
+    contract.updated_at = utcnow()
+    if contract.project is not None and contract.project.status != ProjectStatus.cancelled:
+        contract.project.status = ProjectStatus.completed
+        contract.project.updated_at = utcnow()
+    freelancer = contract.freelancer
+    if freelancer is not None:
+        freelancer.projects_done = int(freelancer.projects_done or 0) + 1
+
+
+def _contract_label(contract: Contract) -> str:
+    project = getattr(contract, "project", None)
+    return project.title if project is not None else "your contract"
+
+
+def _notify_completed(db: Session, contract: Contract, actor: User) -> None:
+    from app.notify import notify_many
+
+    notify_many(
+        db,
+        [contract.client_id, contract.freelancer_id],
+        actor_id=None,
+        kind="contract_completed",
+        title="Contract completed",
+        message=f"“{_contract_label(contract)}” is complete. You can leave a review.",
+        related_type="contract",
+        related_id=contract.id,
+    )
+    _ = actor
+
+
+def _notify_dispute(db: Session, contract: Contract, actor: User, *, opened: bool) -> None:
+    from app.notify import notify_many
+
+    title = _contract_label(contract)
+    if opened:
+        notify_many(
+            db,
+            [contract.client_id, contract.freelancer_id],
+            actor_id=actor.id,
+            kind="dispute_opened",
+            title="Dispute opened",
+            message=f"A dispute was opened on “{title}”.",
+            related_type="contract",
+            related_id=contract.id,
+        )
+        return
+    notify_many(
+        db,
+        [contract.client_id, contract.freelancer_id],
+        actor_id=None,
+        kind="dispute_resolved",
+        title="Dispute resolved",
+        message=f"The dispute on “{title}” was resolved.",
+        related_type="contract",
+        related_id=contract.id,
+    )

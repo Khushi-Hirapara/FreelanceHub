@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — FreelanceHub</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .dash-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: calc(100vh - 72px);
+  }
+  .sidebar {
+    background: var(--ink);
+    color: var(--paper);
+    padding: var(--space-5) var(--space-3);
+  }
+  .sidebar-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-dark);
+  }
+  .avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--amber);
+    color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 600;
+    flex-shrink: 0;
+  }
+  .sidebar-profile h4 { font-size: 0.95rem; }
+  .sidebar-profile span { font-size: 0.75rem; color: rgba(247,245,240,0.55); font-family: var(--font-mono); }
+  .sidebar-nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    color: rgba(247,245,240,0.7);
+    margin-bottom: 4px;
+  }
+  .sidebar-nav a:hover { background: rgba(255,255,255,0.06); color: var(--paper); }
+  .sidebar-nav a.active { background: var(--amber); color: var(--ink); font-weight: 600; }
+  .sidebar-nav .icon { font-family: var(--font-mono); font-size: 0.9rem; width: 18px; text-align: center; }
+
+  .dash-main { padding: var(--space-5) var(--space-5) var(--space-6); }
+  .dash-header { margin-bottom: var(--space-5); }
+  .dash-header h1 { font-family: var(--font-display); font-size: 1.9rem; margin-bottom: 4px; }
+  .dash-header p { color: var(--slate); font-size: 0.92rem; }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+  }
+  .stat-card { padding: var(--space-3) var(--space-4); }
+  .stat-card .eyebrow { font-size: 0.7rem; }
+  .stat-card .val { font-family: var(--font-display); font-size: 1.7rem; margin: 6px 0 2px; }
+  .stat-card .delta { font-size: 0.78rem; color: var(--slate); font-family: var(--font-mono); }
+
+  .admin-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: var(--space-4);
+  }
+  .admin-tab {
+    padding: 8px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    background: var(--paper-raised);
+    color: var(--slate);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .admin-tab.active {
+    border-color: var(--amber-deep);
+    background: rgba(232,163,61,0.12);
+    color: var(--ink);
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: var(--space-3);
+  }
+  .toolbar input, .toolbar select {
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--paper-raised);
+    min-width: 180px;
+  }
+  .admin-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--paper-raised);
+  }
+  table.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .admin-table th, .admin-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+  }
+  .admin-table th {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--slate-light);
+    background: rgba(74,82,104,0.04);
+  }
+  .admin-table tr:last-child td { border-bottom: none; }
+  .status-badge {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+  .status-open, .status-completed, .status-paid, .status-active, .status-resolved { background: rgba(61,131,97,0.12); color: var(--green); }
+  .status-pending, .status-processing, .status-disputed, .status-under_review { background: rgba(232,163,61,0.15); color: var(--amber-deep); }
+  .status-cancelled, .status-failed, .status-inactive, .status-rejected { background: rgba(178,58,58,0.1); color: #B23A3A; }
+  .admin-resolve {
+    display: grid;
+    gap: 6px;
+    min-width: 180px;
+  }
+  .admin-resolve select,
+  .admin-resolve input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 6px 8px;
+    font: inherit;
+  }
+  .pager {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: var(--space-3);
+  }
+  .muted { color: var(--slate); font-size: 0.88rem; }
+
+  @media (max-width: 1100px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 960px) {
+    .dash-layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
+    <ul class="nav-links">
+      <li><a href="admin-dashboard.html" class="active">Admin</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-ghost">Log Out</a>
+    </div>
+  </div>
+</nav>
+
+<div class="dash-layout">
+  <aside class="sidebar">
+    <div class="sidebar-profile">
+      <div class="avatar" id="adminAvatar">AD</div>
+      <div>
+        <h4 id="adminName">Admin</h4>
+        <span>Platform console</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#overview" class="admin-nav active" data-section="overview"><span class="icon">#</span> Overview</a>
+      <a href="#users" class="admin-nav" data-section="users"><span class="icon">#</span> Users</a>
+      <a href="#projects" class="admin-nav" data-section="projects"><span class="icon">#</span> Projects</a>
+      <a href="#contracts" class="admin-nav" data-section="contracts"><span class="icon">#</span> Contracts</a>
+      <a href="#payments" class="admin-nav" data-section="payments"><span class="icon">#</span> Payments</a>
+      <a href="#disputes" class="admin-nav" data-section="disputes"><span class="icon">#</span> Disputes</a>
+    </nav>
+  </aside>
+
+  <main class="dash-main">
+    <div class="dash-header">
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p>Monitor users, projects, contracts, payments, and open disputes.</p>
+      </div>
+    </div>
+
+    <div class="admin-tabs" id="adminTabs">
+      <button type="button" class="admin-tab active" data-section="overview">Overview</button>
+      <button type="button" class="admin-tab" data-section="users">Users</button>
+      <button type="button" class="admin-tab" data-section="projects">Projects</button>
+      <button type="button" class="admin-tab" data-section="contracts">Contracts</button>
+      <button type="button" class="admin-tab" data-section="payments">Payments</button>
+      <button type="button" class="admin-tab" data-section="disputes">Disputes</button>
+    </div>
+
+    <section class="panel active" id="panel-overview">
+      <div class="stats-row" id="overviewStats">
+        <div class="card stat-card"><div class="eyebrow">Loading</div><div class="val">…</div></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-users">
+      <div class="toolbar">
+        <input type="search" id="usersQ" placeholder="Search users…">
+        <select id="usersRole">
+          <option value="">All roles</option>
+          <option value="client">Client</option>
+          <option value="freelancer">Freelancer</option>
+          <option value="admin">Admin</option>
+        </select>
+        <select id="usersActive">
+          <option value="">Any status</option>
+          <option value="true">Active</option>
+          <option value="false">Inactive</option>
+        </select>
+      </div>
+      <div class="admin-table-wrap"><div id="usersTable"></div></div>
+      <div class="pager" id="usersPager"></div>
+    </section>
+
+    <section class="panel" id="panel-projects">
+      <div class="toolbar">
+        <input type="search" id="projectsQ" placeholder="Search projects…">
+        <select id="projectsStatus">
+          <option value="">All statuses</option>
+          <option value="open">Open</option>
+          <option value="in_progress">In progress</option>
+          <option value="awaiting_review">Awaiting review</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="draft">Draft</option>
+        </select>
+      </div>
+      <div class="admin-table-wrap"><div id="projectsTable"></div></div>
+      <div class="pager" id="projectsPager"></div>
+    </section>
+
+    <section class="panel" id="panel-contracts">
+      <div class="toolbar">
+        <input type="search" id="contractsQ" placeholder="Search by project title…">
+        <select id="contractsStatus">
+          <option value="">All statuses</option>
+          <option value="pending">Pending</option>
+          <option value="funded">Funded</option>
+          <option value="in_progress">In progress</option>
+          <option value="submitted">Submitted</option>
+          <option value="approved">Approved</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="disputed">Disputed</option>
+        </select>
+      </div>
+      <div class="admin-table-wrap"><div id="contractsTable"></div></div>
+      <div class="pager" id="contractsPager"></div>
+    </section>
+
+    <section class="panel" id="panel-payments">
+      <div class="toolbar">
+        <input type="search" id="paymentsQ" placeholder="Search transaction id…">
+        <select id="paymentsStatus">
+          <option value="">All statuses</option>
+          <option value="pending">Pending</option>
+          <option value="processing">Processing</option>
+          <option value="paid">Paid</option>
+          <option value="failed">Failed</option>
+          <option value="refunded">Refunded</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="admin-table-wrap"><div id="paymentsTable"></div></div>
+      <div class="pager" id="paymentsPager"></div>
+    </section>
+
+    <section class="panel" id="panel-disputes">
+      <div class="toolbar">
+        <input type="search" id="disputesQ" placeholder="Search disputes…">
+      </div>
+      <div class="admin-table-wrap"><div id="disputesTable"></div></div>
+      <div class="pager" id="disputesPager"></div>
+    </section>
+  </main>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/admin-dashboard.js"></script>
+</body>
+</html>

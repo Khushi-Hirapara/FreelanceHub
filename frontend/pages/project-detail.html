@@ -88,6 +88,111 @@
   }
   .status-pending { background: rgba(232,163,61,0.15); color: var(--amber-deep); }
   .status-accepted { background: rgba(61,131,97,0.12); color: var(--green); }
+  .status-rejected { background: rgba(178,58,58,0.1); color: #B23A3A; }
+
+  .proposal-list { margin-top: var(--space-2); }
+  .proposal-list h2 {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    margin: 0 0 var(--space-3);
+  }
+  .proposal-card { padding: var(--space-4); margin-bottom: var(--space-3); }
+  .proposal-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .proposal-top h3 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    margin-bottom: 4px;
+  }
+  .proposal-top h3 a:hover { color: var(--amber-deep); }
+  .proposal-bid {
+    color: var(--green);
+    font-family: var(--font-mono);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .proposal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: var(--slate);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    margin: 8px 0 12px;
+  }
+  .proposal-meta .stars { color: var(--amber-deep); }
+  .proposal-letter {
+    white-space: pre-wrap;
+    color: var(--ink);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+  .proposal-milestones { margin: 0 0 12px; padding-left: 18px; color: var(--slate); font-size: 0.9rem; }
+  .proposal-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .proposal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .recommend-panel { margin-top: var(--space-2); margin-bottom: var(--space-4); }
+  .recommend-panel h2 {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    margin: 0 0 6px;
+  }
+  .recommend-panel .muted { color: var(--slate); font-size: 0.9rem; margin-bottom: var(--space-3); }
+  .recommend-card { padding: var(--space-4); margin-bottom: var(--space-3); }
+  .recommend-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .recommend-person { display: flex; gap: 12px; align-items: flex-start; }
+  .recommend-person .avatar-sm {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--ink); color: var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 600; flex-shrink: 0;
+  }
+  .recommend-person h3 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    margin: 0 0 2px;
+  }
+  .recommend-person h3 a:hover { color: var(--amber-deep); }
+  .recommend-score {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--green);
+    white-space: nowrap;
+  }
+  .recommend-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    color: var(--slate);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    margin: 8px 0;
+  }
+  .recommend-meta .stars { color: var(--amber-deep); }
+  .recommend-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .recommend-reasons {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--slate);
+    font-size: 0.9rem;
+  }
+  .recommend-foot { margin-top: 12px; }
 </style>
 </head>
 <body>
@@ -136,11 +241,15 @@
     <div class="detail-actions" id="projectActions"></div>
   </div>
 
+  <div id="recommendPanel" class="recommend-panel" style="display:none;"></div>
   <div id="proposalPanel"></div>
+  <div id="projectFiles" class="card detail-card" style="display:none;"></div>
 </div>
 
 <script src="../js/api.js"></script>
+<script src="../js/attachments.js"></script>
 <script src="../js/main.js"></script>
+<script src="../js/hire.js"></script>
 <script src="../js/project-detail.js"></script>
 </body>
 </html>

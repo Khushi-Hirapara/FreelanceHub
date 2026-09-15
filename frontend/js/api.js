@@ -73,20 +73,131 @@ async function api(path, options = {}) {
     if (typeof detail === 'string') message = detail;
     else if (Array.isArray(detail)) message = detail.map((d) => d.msg || d).join(', ');
     else if (res.status === 401) message = 'Please log in again.';
+
+    const isAuthAttempt = path.startsWith('/auth/login') || path.startsWith('/auth/register');
+    if (res.status === 401 && !isAuthAttempt) {
+      handleUnauthorizedSession();
+    }
     throw new ApiError(message, res.status, detail);
   }
 
   return data;
 }
 
-function requireAuth(roles = null) {
-  if (!Auth.isLoggedIn()) {
-    window.location.href = 'login.html';
-    return null;
+/** Public pages that guests may open without a session. */
+const PUBLIC_PAGES = new Set(['login.html', 'register.html', 'index.html', '']);
+
+function currentHtmlPage() {
+  return window.location.pathname.split('/').pop() || 'index.html';
+}
+
+function loginPageHref(nextPage) {
+  const page = currentHtmlPage();
+  const onAppPage = page !== '' && page !== 'index.html';
+  const base = onAppPage ? 'login.html' : 'pages/login.html';
+  if (!nextPage || PUBLIC_PAGES.has(nextPage) || nextPage === 'index.html') return base;
+  return `${base}?next=${encodeURIComponent(nextPage)}`;
+}
+
+function handleUnauthorizedSession() {
+  const page = currentHtmlPage();
+  if (PUBLIC_PAGES.has(page)) return;
+  Auth.clear();
+  if (typeof window.stopNotificationPolling === 'function') {
+    window.stopNotificationPolling();
   }
+  if (!window.__fhRedirectingToLogin) {
+    window.__fhRedirectingToLogin = true;
+    window.location.href = loginPageHref(page);
+  }
+}
+
+/** Redirect guests to login. Call early on every page that loads api.js. */
+function enforceAuthGate() {
+  const page = currentHtmlPage();
+  if (PUBLIC_PAGES.has(page) || page === 'index.html' || page === '') return true;
+  if (Auth.isLoggedIn() && Auth.getUser()) return true;
+  Auth.clear();
+  window.location.href = loginPageHref(page);
+  return false;
+}
+
+async function apiUpload(path, formData) {
+  const headers = {};
+  const token = Auth.getToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  let res;
+  try {
+    res = await fetch(`${API_BASE}${path}`, { method: 'POST', headers, body: formData });
+  } catch {
+    throw new ApiError(
+      'Cannot reach the API. Is the backend running on http://localhost:8000?',
+      0
+    );
+  }
+
+  const text = await res.text();
+  let data = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = text;
+    }
+  }
+
+  if (!res.ok) {
+    const detail = data?.detail;
+    let message = 'Upload failed';
+    if (typeof detail === 'string') message = detail;
+    else if (Array.isArray(detail)) message = detail.map((d) => d.msg || d).join(', ');
+    else if (res.status === 401) message = 'Please log in again.';
+    if (res.status === 401) handleUnauthorizedSession();
+    throw new ApiError(message, res.status, detail);
+  }
+  return data;
+}
+
+async function downloadAttachment(attachmentId, filename) {
+  const headers = {};
+  const token = Auth.getToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const res = await fetch(`${API_BASE}/attachments/${attachmentId}/download`, { headers });
+  if (!res.ok) {
+    let message = 'Download failed';
+    try {
+      const data = await res.json();
+      if (typeof data.detail === 'string') message = data.detail;
+    } catch {
+      // keep default
+    }
+    throw new ApiError(message, res.status);
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename || 'download';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function formatBytes(size) {
+  const n = Number(size || 0);
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function requireAuth(roles = null) {
+  if (!enforceAuthGate()) return null;
   const user = Auth.getUser();
   if (roles && user && !roles.includes(user.role)) {
     if (user.role === 'freelancer') window.location.href = 'freelancer-dashboard.html';
+    else if (user.role === 'admin') window.location.href = 'admin-dashboard.html';
     else window.location.href = 'client-dashboard.html';
     return null;
   }
@@ -116,6 +227,24 @@ function formatMoney(n) {
   return `$${Number(n || 0).toLocaleString()}`;
 }
 
+function starString(rating) {
+  const filled = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
+  return `${'★'.repeat(filled)}${'☆'.repeat(5 - filled)}`;
+}
+
+function formatCurrency(amount, currency = 'USD') {
+  const code = String(currency || 'USD').toUpperCase();
+  try {
+    return new Intl.NumberFormat(code === 'INR' ? 'en-IN' : 'en-US', {
+      style: 'currency',
+      currency: code,
+      maximumFractionDigits: 2,
+    }).format(Number(amount || 0));
+  } catch {
+    return formatMoney(amount);
+  }
+}
+
 function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str ?? '';
@@ -124,7 +253,7 @@ function escapeHtml(str) {
 
 function dashboardForRole(role) {
   if (role === 'freelancer') return 'freelancer-dashboard.html';
-  if (role === 'admin') return 'client-dashboard.html';
+  if (role === 'admin') return 'admin-dashboard.html';
   return 'client-dashboard.html';
 }
 
@@ -141,6 +270,17 @@ function statusLabel(status) {
     submitted: 'Submitted',
     approved: 'Approved',
     disputed: 'Disputed',
+    processing: 'Processing',
+    paid: 'Paid',
+    failed: 'Failed',
+    released: 'Released',
+    under_review: 'Under review',
+    resolved: 'Resolved',
+    rejected: 'Rejected',
+    refund_client: 'Refund client',
+    release_to_freelancer: 'Release to freelancer',
+    partial_refund: 'Partial refund',
+    refunded: 'Refunded',
   };
   return map[status] || status;
 }

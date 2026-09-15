@@ -6,71 +6,20 @@
 <title>Client Dashboard — FreelanceHub</title>
 <link rel="stylesheet" href="../css/style.css">
 <style>
-  .dash-layout {
-    display: grid;
-    grid-template-columns: 240px 1fr;
-    min-height: calc(100vh - 72px);
-  }
-
-  /* ---- Sidebar ---- */
-  .sidebar {
-    background: var(--ink);
-    color: var(--paper);
-    padding: var(--space-5) var(--space-3);
-  }
-  .sidebar-profile {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding-bottom: var(--space-4);
-    margin-bottom: var(--space-4);
-    border-bottom: 1px solid var(--border-dark);
-  }
-  .avatar {
-    width: 42px; height: 42px; border-radius: 50%;
-    background: var(--amber);
-    color: var(--ink);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-display); font-weight: 600;
-    flex-shrink: 0;
-  }
-  .sidebar-profile h4 { font-size: 0.95rem; }
-  .sidebar-profile span { font-size: 0.75rem; color: rgba(247,245,240,0.55); font-family: var(--font-mono); }
-
-  .sidebar-nav a {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 12px;
-    border-radius: var(--radius);
-    font-size: 0.9rem;
-    color: rgba(247,245,240,0.7);
-    margin-bottom: 4px;
-    transition: background 0.15s ease, color 0.15s ease;
-  }
-  .sidebar-nav a:hover { background: rgba(255,255,255,0.06); color: var(--paper); }
-  .sidebar-nav a.active { background: var(--amber); color: var(--ink); font-weight: 600; }
-  .sidebar-nav .icon { font-family: var(--font-mono); font-size: 0.9rem; width: 18px; text-align: center; }
-
-  /* ---- Main ---- */
-  .dash-main { padding: var(--space-5) var(--space-5) var(--space-6); }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); margin-bottom: var(--space-5); }
+  .stat-card { padding: var(--space-3) var(--space-4); }
+  .stat-card .eyebrow { font-size: 0.7rem; }
+  .stat-card .val { font-family: var(--font-display); font-size: 1.9rem; margin: 6px 0 2px; }
+  .stat-card .delta { font-size: 0.78rem; color: var(--green); font-family: var(--font-mono); }
   .dash-header {
     display: flex; justify-content: space-between; align-items: flex-start;
     margin-bottom: var(--space-5);
   }
   .dash-header h1 { font-family: var(--font-display); font-size: 1.9rem; margin-bottom: 4px; }
   .dash-header p { color: var(--slate); font-size: 0.92rem; }
-
-  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); margin-bottom: var(--space-5); }
-  .stat-card { padding: var(--space-3) var(--space-4); }
-  .stat-card .eyebrow { font-size: 0.7rem; }
-  .stat-card .val { font-family: var(--font-display); font-size: 1.9rem; margin: 6px 0 2px; }
-  .stat-card .delta { font-size: 0.78rem; color: var(--green); font-family: var(--font-mono); }
-
-  /* ---- Two column: my projects + activity ---- */
   .dash-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: var(--space-4); align-items: start; }
-
   .section-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); }
   .section-title h2 { font-family: var(--font-display); font-size: 1.3rem; }
-
   .myproject-item { padding: var(--space-4); margin-bottom: var(--space-3); }
   .myproject-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
   .myproject-item h3 { font-family: var(--font-display); font-size: 1.05rem; }
@@ -83,17 +32,12 @@
   .status-review { background: rgba(74,82,104,0.12); color: var(--slate); }
   .myproject-meta { font-size: 0.85rem; color: var(--slate); margin-bottom: 10px; }
   .myproject-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px dashed var(--border); font-family: var(--font-mono); font-size: 0.78rem; color: var(--slate-light); }
-
-  /* ---- Activity feed ---- */
   .activity-card { padding: var(--space-4); }
   .activity-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; color: var(--ink); }
   .activity-item:last-child { border-bottom: none; }
   .activity-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); margin-top: 6px; flex-shrink: 0; }
   .activity-item .time { display: block; font-family: var(--font-mono); font-size: 0.75rem; color: var(--slate-light); margin-top: 2px; }
-
   @media (max-width: 960px) {
-    .dash-layout { grid-template-columns: 1fr; }
-    .sidebar { display: none; }
     .stats-row { grid-template-columns: repeat(2, 1fr); }
     .dash-grid { grid-template-columns: 1fr; }
   }
@@ -104,34 +48,13 @@
 <nav class="navbar">
   <div class="container">
     <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
-    <ul class="nav-links">
-      <li><a href="client-dashboard.html" class="active">My Projects</a></li>
-      <li><a href="messaging.html">Messages</a></li>
-      <li><a href="profile.html">Profile</a></li>
-    </ul>
-    <div class="nav-actions">
-      <a href="login.html" class="btn btn-ghost">Log Out</a>
-    </div>
+    <ul class="nav-links"></ul>
+    <div class="nav-actions"></div>
   </div>
 </nav>
 
 <div class="dash-layout">
-  <aside class="sidebar">
-    <div class="sidebar-profile">
-      <div class="avatar">—</div>
-      <div>
-        <h4>Loading…</h4>
-        <span>Client</span>
-      </div>
-    </div>
-    <nav class="sidebar-nav">
-      <a href="client-dashboard.html" class="active"><span class="icon">#</span> My Projects</a>
-      <a href="project-posting.html"><span class="icon">#</span> Post a Project</a>
-      <a href="contracts.html"><span class="icon">#</span> Contracts</a>
-      <a href="messaging.html"><span class="icon">#</span> Messages</a>
-      <a href="profile.html"><span class="icon">#</span> Profile</a>
-    </nav>
-  </aside>
+  <aside class="sidebar" data-static-sidebar></aside>
 
   <main class="dash-main">
     <div class="dash-header">

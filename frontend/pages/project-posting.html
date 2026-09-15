@@ -10,7 +10,6 @@
     display: grid;
     grid-template-columns: 1.4fr 1fr;
     gap: var(--space-6);
-    padding: var(--space-6) 0 var(--space-7);
     align-items: start;
   }
 
@@ -93,6 +92,49 @@
 
   .form-actions { display: flex; justify-content: flex-end; gap: var(--space-3); margin-top: var(--space-5); }
 
+  .hire-banner {
+    margin-bottom: var(--space-4);
+    padding: 14px 16px;
+    border: 1.5px solid rgba(232,163,61,0.45);
+    border-radius: var(--radius);
+    background: rgba(232,163,61,0.1);
+  }
+  .hire-banner strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+  }
+  .hire-banner p { color: var(--slate); font-size: 0.9rem; margin: 0; }
+
+  .ai-assist {
+    margin-bottom: var(--space-5);
+    padding: var(--space-4);
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius);
+    background: rgba(232,163,61,0.06);
+  }
+  .ai-assist h2 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    margin-bottom: 6px;
+  }
+  .ai-assist p { color: var(--slate); font-size: 0.9rem; margin-bottom: var(--space-3); }
+  .ai-assist textarea {
+    width: 100%;
+    min-height: 88px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font: inherit;
+    background: var(--paper-raised);
+    resize: vertical;
+    margin-bottom: var(--space-3);
+  }
+  .ai-assist textarea:focus { outline: none; border-color: var(--amber-deep); }
+  .ai-assist-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .ai-assist .hint { font-size: 0.78rem; color: var(--slate-light); margin: 0; }
+
   /* ---- Live preview ---- */
   .preview-sticky { position: sticky; top: 96px; }
   .preview-label { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; color: var(--slate-light); margin-bottom: var(--space-2); display: block; }
@@ -117,29 +159,41 @@
 <nav class="navbar">
   <div class="container">
     <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
-    <ul class="nav-links">
-      <li><a href="client-dashboard.html">My Projects</a></li>
-      <li><a href="project-posting.html" class="active">Post a Project</a></li>
-      <li><a href="messaging.html">Messages</a></li>
-    </ul>
-    <div class="nav-actions">
-      <a href="login.html" class="btn btn-ghost">Log Out</a>
-    </div>
+    <ul class="nav-links"></ul>
+    <div class="nav-actions"></div>
   </div>
 </nav>
 
-<div class="container">
+<div class="dash-layout">
+  <aside class="sidebar" data-static-sidebar></aside>
+
+  <main class="dash-main">
   <div class="post-layout">
     <div>
       <div class="post-header">
-        <h1>Post a new project</h1>
-        <p>Describe what you need built — the more specific, the better your proposals.</p>
+        <h1 id="postTitle">Post a new project</h1>
+        <p id="postSubtitle">Describe what you need built — the more specific, the better your proposals.</p>
+      </div>
+
+      <div class="hire-banner" id="hireBanner" hidden>
+        <strong id="hireBannerTitle">Hiring a freelancer</strong>
+        <p id="hireBannerText">Post your brief, then invite them from the project or message them after publishing.</p>
       </div>
 
       <div class="steps">
         <div class="step active"><span class="step-dot">1</span> Project Details</div>
         <div class="step"><span class="step-dot">2</span> Budget & Timeline</div>
         <div class="step"><span class="step-dot">3</span> Review & Post</div>
+      </div>
+
+      <div class="ai-assist" id="aiAssist">
+        <h2>AI Brief Assistant</h2>
+        <p>Paste a rough idea. We’ll suggest a structured brief you can edit before posting — nothing is published automatically.</p>
+        <textarea id="aiRoughDescription" placeholder='e.g. "I need a website for my restaurant with online booking."'></textarea>
+        <div class="ai-assist-actions">
+          <button type="button" class="btn btn-outline" id="generateWithAi">✨ Generate with AI</button>
+          <p class="hint" id="aiHint">Review every field before you submit.</p>
+        </div>
       </div>
 
       <form class="card form-card" id="projectForm">
@@ -199,9 +253,15 @@
           </div>
         </div>
 
+        <div class="form-group">
+          <label for="estimatedDuration">Estimated duration <span class="optional">(suggested)</span></label>
+          <input type="text" id="estimatedDuration" placeholder="e.g. 2–4 weeks" maxlength="80">
+          <p class="hint">AI may suggest this for planning. It is not required to post.</p>
+        </div>
+
         <div class="form-actions">
-          <button type="button" class="btn btn-outline">Save as Draft</button>
-          <button type="submit" class="btn btn-primary">Post Project</button>
+          <p id="formNotice" style="margin-right:auto;color:var(--slate);font-size:0.88rem;"></p>
+          <button type="submit" class="btn btn-primary" id="submitProject">Post Project</button>
         </div>
       </form>
     </div>
@@ -220,6 +280,7 @@
       </div>
     </div>
   </div>
+  </main>
 </div>
 
 <script src="../js/api.js"></script>

@@ -139,7 +139,7 @@ def update_contract_status(
     if not contract:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contract not found")
 
-    apply_contract_status(contract, current_user, payload.status)
+    apply_contract_status(db, contract, current_user, payload.status)
     db.add(contract)
     db.commit()
     loaded = load_contract(db, contract.id)

@@ -16,10 +16,23 @@ function getSelectedRole(containerId) {
   return active ? active.dataset.role : 'client';
 }
 
+function safeNextPage() {
+  const next = new URLSearchParams(window.location.search).get('next') || '';
+  if (!next || next.includes('://') || next.includes('..') || next.startsWith('/')) return null;
+  if (!/^[a-z0-9\-]+\.html$/i.test(next)) return null;
+  if (PUBLIC_PAGES?.has?.(next) || next === 'login.html' || next === 'register.html') return null;
+  return next;
+}
+
+function redirectAfterAuth(user) {
+  const next = safeNextPage();
+  window.location.href = next || dashboardForRole(user?.role);
+}
+
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
-  if (Auth.isLoggedIn()) {
-    window.location.href = dashboardForRole(Auth.getUser()?.role);
+  if (Auth.isLoggedIn() && Auth.getUser()) {
+    redirectAfterAuth(Auth.getUser());
   }
 
   loginForm.addEventListener('submit', async (e) => {
@@ -47,9 +60,7 @@ if (loginForm) {
       });
       Auth.setSession(data.access_token, data.user);
       showToast(`Welcome back, ${data.user.name.split(' ')[0]}!`);
-      setTimeout(() => {
-        window.location.href = dashboardForRole(data.user.role);
-      }, 600);
+      setTimeout(() => redirectAfterAuth(data.user), 600);
     } catch (err) {
       errorBox.textContent = err.message || 'Incorrect email or password. Try again.';
       errorBox.classList.add('show');
@@ -60,8 +71,8 @@ if (loginForm) {
 
 const registerForm = document.getElementById('registerForm');
 if (registerForm) {
-  if (Auth.isLoggedIn()) {
-    window.location.href = dashboardForRole(Auth.getUser()?.role);
+  if (Auth.isLoggedIn() && Auth.getUser()) {
+    redirectAfterAuth(Auth.getUser());
   }
 
   registerForm.addEventListener('submit', async (e) => {
@@ -96,9 +107,7 @@ if (registerForm) {
       });
       Auth.setSession(data.access_token, data.user);
       showToast('Account created! Taking you to your dashboard...');
-      setTimeout(() => {
-        window.location.href = dashboardForRole(data.user.role);
-      }, 800);
+      setTimeout(() => redirectAfterAuth(data.user), 800);
     } catch (err) {
       showToast(err.message || 'Something went wrong. Try again.', 'error');
       submitBtn.disabled = false;

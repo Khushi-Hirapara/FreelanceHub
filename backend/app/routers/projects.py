@@ -4,8 +4,10 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
 from app.deps import get_current_user, require_roles
+from app.freelancer_matching import recommend_freelancers
 from app.models import Project, ProjectStatus, User, UserRole
-from app.schemas import ProjectCreate, ProjectOut, ProjectUpdate, UserOut
+from app.schemas import ProjectCreate, ProjectOut, ProjectUpdate, RecommendedFreelancerOut
+from app.routers.users import public_user
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
 
@@ -25,7 +27,7 @@ def serialize_project(project: Project) -> ProjectOut:
         status=project.status,
         proposal_count=len(project.proposals) if project.proposals is not None else 0,
         created_at=project.created_at,
-        client=UserOut.model_validate(project.client) if project.client else None,
+        client=public_user(project.client) if project.client else None,
     )
 
 
@@ -115,6 +117,22 @@ def get_project(project_id: int, db: Session = Depends(get_db)):
     return serialize_project(project)
 
 
+@router.get("/{project_id}/recommended-freelancers", response_model=list[RecommendedFreelancerOut])
+def recommended_freelancers(
+    project_id: int,
+    limit: int = Query(default=5, ge=1, le=20),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles(UserRole.client, UserRole.admin)),
+):
+    """Rank freelancers for a project. Deterministic scoring; embeddings can plug in later."""
+    project = db.get(Project, project_id)
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+    if current_user.role != UserRole.admin and project.client_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not your project")
+    return recommend_freelancers(db, project, limit=limit)
+
+
 @router.put("/{project_id}", response_model=ProjectOut)
 def update_project(
     project_id: int,
@@ -128,7 +146,37 @@ def update_project(
     if project.client_id != current_user.id and current_user.role != UserRole.admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not your project")
 
-    for key, value in payload.model_dump(exclude_unset=True).items():
+    locked = {ProjectStatus.completed, ProjectStatus.cancelled}
+    if project.status in locked and current_user.role != UserRole.admin:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Completed or cancelled projects cannot be edited",
+        )
+
+    changes = payload.model_dump(exclude_unset=True)
+    if not changes:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No changes provided")
+    if "status" in changes and current_user.role != UserRole.admin:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only an admin can change project status",
+        )
+
+    for key in ("title", "category", "description", "experience_level"):
+        if isinstance(changes.get(key), str):
+            changes[key] = changes[key].strip()
+            if key != "experience_level" and not changes[key]:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{key} cannot be blank")
+
+    next_min = changes.get("budget_min", project.budget_min)
+    next_max = changes.get("budget_max", project.budget_max)
+    if next_min is None or next_max is None or next_min <= 0 or next_max <= 0 or next_max < next_min:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Budget maximum must be greater than or equal to the minimum",
+        )
+
+    for key, value in changes.items():
         setattr(project, key, value)
 
     db.add(project)

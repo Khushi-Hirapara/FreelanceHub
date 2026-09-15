@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment — FreelanceHub</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .detail-page { max-width: 760px; margin: 0 auto; padding: var(--space-5) var(--space-4) var(--space-6); }
+  .detail-card { padding: var(--space-5); }
+  .detail-card h1 { font-family: var(--font-display); font-size: 1.7rem; margin: 8px 0; }
+  .row { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px dashed var(--border); }
+  .row span { color: var(--slate); }
+  .demo { margin-top: 16px; color: var(--slate); font-size: 0.85rem; }
+  .status-pill {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+  .status-paid { background: rgba(61,131,97,0.12); color: var(--green); }
+  .status-pending, .status-processing { background: rgba(232,163,61,0.15); color: var(--amber-deep); }
+  .status-failed, .status-cancelled, .status-refunded { background: rgba(178,58,58,0.1); color: #B23A3A; }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
+    <ul class="nav-links"></ul>
+    <div class="nav-actions"></div>
+  </div>
+</nav>
+<div class="dash-layout">
+  <aside class="sidebar" data-static-sidebar></aside>
+  <main class="dash-main">
+  <p style="margin-bottom:var(--space-3);"><a href="payments.html">← Back to payments</a></p>
+  <div class="card detail-card" id="paymentBody">
+    <p style="color:var(--slate);">Loading payment…</p>
+  </div>
+  </main>
+</div>
+<script src="../js/api.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/payment-detail.js"></script>
+</body>
+</html>

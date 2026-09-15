@@ -1,12 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
 from app.contract_flow import accept_proposal_and_create_contract
 from app.database import get_db
 from app.deps import get_current_user, require_roles
 from app.models import Project, ProjectStatus, Proposal, ProposalStatus, User, UserRole
-from app.schemas import ProposalCreate, ProposalOut, ProposalStatusUpdate, ProjectOut, UserOut
+from app.routers.users import public_user
+from app.schemas import ProposalCreate, ProposalOut, ProposalStatusUpdate, ProjectOut
 
 router = APIRouter(tags=["Proposals"])
 
@@ -23,7 +25,7 @@ def serialize_proposal(proposal: Proposal, include_project: bool = False) -> Pro
         status=proposal.status,
         created_at=proposal.created_at,
         contract_id=proposal.contract.id if proposal.contract else None,
-        freelancer=UserOut.model_validate(proposal.freelancer) if proposal.freelancer else None,
+        freelancer=public_user(proposal.freelancer) if proposal.freelancer else None,
         project=None,
     )
     if include_project and proposal.project:
@@ -79,6 +81,19 @@ def create_proposal(
         status=ProposalStatus.pending,
     )
     db.add(proposal)
+    db.flush()
+    from app.notify import notify
+
+    notify(
+        db,
+        project.client_id,
+        kind="new_proposal",
+        title="New proposal",
+        message=f"{current_user.name} submitted a proposal for “{project.title}”.",
+        related_type="project",
+        related_id=project.id,
+        actor_id=current_user.id,
+    )
     db.commit()
     db.refresh(proposal)
 
@@ -173,8 +188,15 @@ def update_proposal_status(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported status change")
 
     if payload.status == ProposalStatus.accepted:
-        accept_proposal_and_create_contract(db, proposal, current_user)
-        db.commit()
+        try:
+            accept_proposal_and_create_contract(db, proposal, current_user)
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="A contract already exists for this project or proposal",
+            ) from None
         proposal = db.scalars(
             select(Proposal)
             .options(
@@ -186,8 +208,27 @@ def update_proposal_status(
         ).unique().one()
         return serialize_proposal(proposal, include_project=True)
 
+    if payload.status == ProposalStatus.rejected and proposal.status != ProposalStatus.pending:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only a pending proposal can be rejected")
+    if payload.status == ProposalStatus.withdrawn and proposal.status != ProposalStatus.pending:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only a pending proposal can be withdrawn")
+
     proposal.status = payload.status
     db.add(proposal)
+    if payload.status == ProposalStatus.rejected:
+        from app.notify import notify
+
+        title = project.title if project else "a project"
+        notify(
+            db,
+            proposal.freelancer_id,
+            kind="proposal_rejected",
+            title="Proposal rejected",
+            message=f"Your proposal for “{title}” was rejected.",
+            related_type="project",
+            related_id=proposal.project_id,
+            actor_id=current_user.id,
+        )
     db.commit()
     db.refresh(proposal)
     return serialize_proposal(proposal, include_project=True)

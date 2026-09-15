@@ -6,10 +6,52 @@
 <title>Messages — FreelanceHub</title>
 <link rel="stylesheet" href="../css/style.css">
 <style>
+  /* Lock the page: only chat thread / conv list scroll */
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+  .navbar {
+    flex-shrink: 0;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+  .mobile-side-nav {
+    flex-shrink: 0;
+  }
+
+  .dash-layout.msg-shell {
+    flex: 1;
+    min-height: 0;
+    height: calc(100vh - 72px);
+    max-height: calc(100vh - 72px);
+    overflow: hidden;
+  }
+  .dash-layout.msg-shell .sidebar {
+    position: relative;
+    top: 0;
+    height: 100%;
+    max-height: 100%;
+    align-self: stretch;
+    overflow-y: auto;
+  }
+  .dash-layout.msg-shell .dash-main--flush {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+    padding: 0;
+  }
   .msg-layout {
     display: grid;
     grid-template-columns: 320px 1fr;
-    height: calc(100vh - 72px);
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
   }
 
   /* ---- Conversation list ---- */
@@ -18,8 +60,12 @@
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
   }
   .conv-search {
+    flex-shrink: 0;
     padding: var(--space-4);
     border-bottom: 1px solid var(--border);
   }
@@ -32,7 +78,12 @@
   }
   .conv-search input:focus { outline: none; border-color: var(--amber-deep); }
 
-  .conv-list { flex: 1; overflow-y: auto; }
+  .conv-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
   .conv-item {
     display: flex; gap: 12px;
     padding: 14px var(--space-4);
@@ -42,6 +93,7 @@
   }
   .conv-item:hover { background: rgba(232,163,61,0.06); }
   .conv-item.active { background: rgba(232,163,61,0.1); border-left: 3px solid var(--amber); }
+  .conv-item.ai-conv { background: rgba(232,163,61,0.04); }
   .conv-avatar {
     width: 40px; height: 40px; border-radius: 50%;
     background: var(--ink); color: var(--paper);
@@ -49,6 +101,13 @@
     font-family: var(--font-display); font-weight: 600; font-size: 0.85rem;
     flex-shrink: 0;
   }
+  .conv-avatar.ai-avatar,
+  .ai-avatar {
+    background: linear-gradient(135deg, var(--amber), #c97f1e);
+    color: var(--ink);
+  }
+  .msg-bubble.ai-bubble { border-color: rgba(232,163,61,0.35); }
+  .msg-bubble.ai-typing { opacity: 0.75; font-style: italic; }
   .conv-info { flex: 1; min-width: 0; }
   .conv-top-row { display: flex; justify-content: space-between; align-items: baseline; }
   .conv-info h4 { font-size: 0.92rem; }
@@ -58,8 +117,16 @@
   .unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); flex-shrink: 0; margin-top: 6px; }
 
   /* ---- Chat panel ---- */
-  .chat-panel { display: flex; flex-direction: column; background: var(--paper); }
+  .chat-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--paper);
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+  }
   .chat-header {
+    flex-shrink: 0;
     display: flex; align-items: center; justify-content: space-between;
     padding: var(--space-3) var(--space-4);
     border-bottom: 1px solid var(--border);
@@ -68,10 +135,23 @@
   .chat-header-info { display: flex; align-items: center; gap: 12px; }
   .chat-header h3 { font-size: 1rem; }
   .chat-header span { font-size: 0.78rem; color: var(--slate-light); font-family: var(--font-mono); }
+  .ws-state {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--slate);
+  }
+  .ws-state.live { color: var(--green); border-color: rgba(61,131,97,0.35); background: rgba(61,131,97,0.08); }
+  .ws-state.fallback { color: var(--amber-deep); border-color: rgba(232,163,61,0.35); background: rgba(232,163,61,0.1); }
+  .ws-state.offline { color: #B23A3A; border-color: rgba(178,58,58,0.25); background: rgba(178,58,58,0.08); }
 
   .chat-body {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
+    overscroll-behavior: contain;
     padding: var(--space-4);
     display: flex;
     flex-direction: column;
@@ -79,14 +159,14 @@
   }
   .day-divider { text-align: center; font-family: var(--font-mono); font-size: 0.72rem; color: var(--slate-light); margin: var(--space-2) 0; }
 
-  .msg-bubble { max-width: 60%; padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; line-height: 1.45; }
+  .msg-bubble { max-width: min(70%, 520px); padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; line-height: 1.45; word-wrap: break-word; }
   .msg-bubble.received { align-self: flex-start; background: var(--paper-raised); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
   .msg-bubble.sent { align-self: flex-end; background: var(--ink); color: var(--paper); border-bottom-right-radius: 2px; }
   .msg-time { display: block; font-family: var(--font-mono); font-size: 0.68rem; margin-top: 4px; opacity: 0.6; }
 
   .msg-attachment {
     align-self: flex-start;
-    max-width: 60%;
+    max-width: min(70%, 520px);
     display: flex; align-items: center; gap: 10px;
     background: var(--paper-raised);
     border: 1px solid var(--border);
@@ -97,6 +177,7 @@
   .msg-attachment .file-icon { font-family: var(--font-mono); color: var(--amber-deep); font-weight: 700; }
 
   .chat-input-bar {
+    flex-shrink: 0;
     display: flex; align-items: center; gap: 10px;
     padding: var(--space-3) var(--space-4);
     border-top: 1px solid var(--border);
@@ -125,6 +206,15 @@
   }
   .send-btn:hover { background: var(--amber-deep); }
 
+  @media (max-width: 1100px) {
+    .msg-layout { grid-template-columns: 280px 1fr; }
+  }
+  @media (max-width: 960px) {
+    .dash-layout.msg-shell {
+      height: calc(100vh - 72px - 57px);
+      max-height: calc(100vh - 72px - 57px);
+    }
+  }
   @media (max-width: 860px) {
     .msg-layout { grid-template-columns: 1fr; }
     .conv-list-panel { display: none; }
@@ -136,17 +226,14 @@
 <nav class="navbar">
   <div class="container">
     <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
-    <ul class="nav-links">
-      <li><a href="freelancer-dashboard.html">Find Work</a></li>
-      <li><a href="messaging.html" class="active">Messages</a></li>
-      <li><a href="profile.html">Profile</a></li>
-    </ul>
-    <div class="nav-actions">
-      <a href="login.html" class="btn btn-ghost">Log Out</a>
-    </div>
+    <ul class="nav-links"></ul>
+    <div class="nav-actions"></div>
   </div>
 </nav>
 
+<div class="dash-layout msg-shell">
+  <aside class="sidebar" data-static-sidebar></aside>
+  <main class="dash-main dash-main--flush">
 <div class="msg-layout">
   <!-- Conversation list -->
   <div class="conv-list-panel">
@@ -168,7 +255,10 @@
           <span>Your messages will appear here</span>
         </div>
       </div>
-      <a href="find-talent.html" class="btn btn-outline btn-sm" id="chatBrowseLink">Browse</a>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="ws-state offline" id="wsState">Offline</span>
+        <a href="find-talent.html" class="btn btn-outline btn-sm" id="chatBrowseLink">Browse</a>
+      </div>
     </div>
 
     <div class="chat-body" id="chatBody">
@@ -176,14 +266,18 @@
     </div>
 
     <div class="chat-input-bar">
-      <button class="icon-btn" title="Attach file">+</button>
-      <input type="text" id="msgInput" placeholder="Type a message...">
+      <button type="button" class="icon-btn" id="attachBtn" title="Attach file">+</button>
+      <input type="file" id="attachInput" hidden>
+      <input type="text" id="msgInput" placeholder="Ask FreelanceHub AI or message a contact…">
       <button class="send-btn" id="sendBtn">→</button>
     </div>
   </div>
 </div>
+  </main>
+</div>
 
 <script src="../js/api.js"></script>
+<script src="../js/attachments.js"></script>
 <script src="../js/main.js"></script>
 <script src="../js/messaging.js"></script>
 </body>

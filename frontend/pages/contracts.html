@@ -6,58 +6,160 @@
 <title>Contracts — FreelanceHub</title>
 <link rel="stylesheet" href="../css/style.css">
 <style>
-  .dash-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 72px); }
-  .sidebar { background: var(--ink); color: var(--paper); padding: var(--space-5) var(--space-3); }
-  .sidebar-profile { display: flex; align-items: center; gap: 12px; padding-bottom: var(--space-4); margin-bottom: var(--space-4); border-bottom: 1px solid var(--border-dark); }
-  .avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--amber); color: var(--ink); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 600; }
-  .sidebar-profile h4 { font-size: 0.95rem; }
-  .sidebar-profile span { font-size: 0.75rem; color: rgba(247,245,240,0.55); font-family: var(--font-mono); }
-  .sidebar-nav a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius); font-size: 0.9rem; color: rgba(247,245,240,0.7); margin-bottom: 4px; }
-  .sidebar-nav a:hover { background: rgba(255,255,255,0.06); color: var(--paper); }
-  .sidebar-nav a.active { background: var(--amber); color: var(--ink); font-weight: 600; }
-  .sidebar-nav .icon { font-family: var(--font-mono); font-size: 0.9rem; width: 18px; text-align: center; }
-  .dash-main { padding: var(--space-5) var(--space-5) var(--space-6); }
+  .dash-header { margin-bottom: var(--space-4); }
   .dash-header h1 { font-family: var(--font-display); font-size: 1.9rem; margin-bottom: 4px; }
-  .dash-header p { color: var(--slate); font-size: 0.92rem; margin-bottom: var(--space-4); }
-  .contract-item { padding: var(--space-4); margin-bottom: var(--space-3); }
-  .contract-top { display: flex; justify-content: space-between; gap: var(--space-3); align-items: flex-start; margin-bottom: 8px; }
-  .contract-item h3 { font-family: var(--font-display); font-size: 1.1rem; }
-  .contract-meta { color: var(--slate); font-size: 0.88rem; margin-bottom: 10px; }
-  .contract-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 0.85rem; }
-  .status-badge { font-family: var(--font-mono); font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; }
+  .dash-header p { color: var(--slate); font-size: 0.92rem; }
+
+  .flow-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: var(--space-5);
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.9), rgba(247,245,240,0.65));
+  }
+  .flow-step {
+    position: relative;
+    padding: 8px 10px;
+  }
+  .flow-step .num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--amber-deep);
+    letter-spacing: 0.06em;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .flow-step strong { display: block; font-size: 0.9rem; margin-bottom: 2px; }
+  .flow-step span { color: var(--slate); font-size: 0.78rem; line-height: 1.35; }
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: var(--space-4);
+  }
+  .filter-chip {
+    padding: 8px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    background: var(--paper-raised);
+    color: var(--slate);
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .filter-chip.active {
+    border-color: var(--amber-deep);
+    background: rgba(232,163,61,0.12);
+    color: var(--ink);
+  }
+
+  .contract-item {
+    padding: var(--space-4);
+    margin-bottom: var(--space-3);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .contract-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-raised);
+  }
+  .contract-top {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+  .contract-item h3 { font-family: var(--font-display); font-size: 1.15rem; }
+  .contract-meta { color: var(--slate); font-size: 0.88rem; margin-bottom: 8px; }
+  .next-step {
+    margin: 12px 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(232,163,61,0.1);
+    border: 1px solid rgba(232,163,61,0.28);
+    font-size: 0.88rem;
+    color: var(--ink);
+  }
+  .next-step strong { font-weight: 600; }
+  .contract-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    font-size: 0.85rem;
+  }
+  .contract-foot .muted { color: var(--slate-light); font-family: var(--font-mono); font-size: 0.78rem; }
+  .contract-ctas { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .status-badge {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
   .status-pending, .status-disputed { background: rgba(232,163,61,0.15); color: var(--amber-deep); }
-  .status-funded, .status-progress, .status-submitted { background: rgba(61,90,160,0.12); color: #2c4a8a; }
+  .status-funded, .status-progress, .status-submitted, .status-in_progress { background: rgba(61,90,160,0.12); color: #2c4a8a; }
   .status-approved, .status-completed { background: rgba(61,131,97,0.12); color: var(--green); }
   .status-cancelled { background: rgba(74,82,104,0.12); color: var(--slate); }
-  @media (max-width: 960px) { .dash-layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+  .empty-box {
+    padding: var(--space-5);
+    border: 1.5px dashed var(--border);
+    border-radius: 14px;
+    text-align: center;
+  }
+  .empty-box h3 { font-family: var(--font-display); margin-bottom: 8px; }
+  .empty-box p { color: var(--slate); margin-bottom: var(--space-4); max-width: 420px; margin-left: auto; margin-right: auto; }
+
+  @media (max-width: 900px) {
+    .flow-strip { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .flow-strip { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
 <nav class="navbar">
   <div class="container">
-    <a href="../index.html" class="logo">Freelance<span>Hub</span></a>
-    <div class="nav-links"></div>
+    <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
+    <ul class="nav-links"></ul>
     <div class="nav-actions"></div>
-    <button class="mobile-menu" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
 <div class="dash-layout">
-  <aside class="sidebar">
-    <div class="sidebar-profile">
-      <div class="avatar" id="sideAvatar">—</div>
-      <div>
-        <h4 id="sideName">Loading…</h4>
-        <span id="sideRole">—</span>
-      </div>
-    </div>
-    <nav class="sidebar-nav" id="sideNav"></nav>
-  </aside>
+  <aside class="sidebar" data-static-sidebar></aside>
   <main class="dash-main">
     <div class="dash-header">
-      <h1>Contracts</h1>
-      <p>Agreements created when a proposal is accepted. Payments are not connected yet.</p>
+      <h1 id="pageTitle">Contracts</h1>
+      <p id="pageSub">Real marketplace path: accept a proposal → fund escrow → deliver work → approve → complete.</p>
     </div>
+
+    <div class="flow-strip" aria-label="Contract journey">
+      <div class="flow-step"><span class="num">01</span><strong>Accept</strong><span>Proposal becomes a contract</span></div>
+      <div class="flow-step"><span class="num">02</span><strong>Fund</strong><span>Client pays into escrow</span></div>
+      <div class="flow-step"><span class="num">03</span><strong>Work</strong><span>Milestones & delivery</span></div>
+      <div class="flow-step"><span class="num">04</span><strong>Approve</strong><span>Client reviews work</span></div>
+      <div class="flow-step"><span class="num">05</span><strong>Complete</strong><span>Release & reviews</span></div>
+    </div>
+
+    <div class="filter-row" id="contractFilters">
+      <button type="button" class="filter-chip active" data-filter="all">All</button>
+      <button type="button" class="filter-chip" data-filter="needs_action">Needs action</button>
+      <button type="button" class="filter-chip" data-filter="active">Active</button>
+      <button type="button" class="filter-chip" data-filter="done">Completed</button>
+    </div>
+
     <div id="contractList">
       <p style="color:var(--slate);padding:12px 0;">Loading contracts…</p>
     </div>

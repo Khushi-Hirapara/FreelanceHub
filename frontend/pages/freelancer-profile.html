@@ -3,17 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Priya Nair — FreelanceHub</title>
+<title>Freelancer — FreelanceHub</title>
 <link rel="stylesheet" href="../css/style.css">
 <style>
-  .profile-page {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: var(--space-5) var(--space-4) var(--space-6);
-  }
-
   .profile-hero {
-    padding: var(--space-5);
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background:
+      radial-gradient(900px 280px at 0% 0%, rgba(232,163,61,0.22), transparent 55%),
+      linear-gradient(135deg, #171d35 0%, var(--ink) 55%, #0f1424 100%);
+    color: var(--paper);
+    padding: clamp(1.5rem, 3vw, 2.2rem);
     margin-bottom: var(--space-4);
   }
   .profile-hero-top {
@@ -23,61 +25,69 @@
     flex-wrap: wrap;
   }
   .avatar-lg {
-    width: 88px; height: 88px; border-radius: 50%;
-    background: var(--amber);
-    color: var(--ink);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-display); font-size: 1.8rem; font-weight: 600;
+    width: 96px; height: 96px; border-radius: 50%;
+    background: var(--amber); color: var(--ink);
+    display: grid; place-items: center;
+    font-family: var(--font-display); font-size: 2rem; font-weight: 600;
     flex-shrink: 0;
+    border: 3px solid rgba(255,255,255,0.18);
   }
   .profile-hero h1 {
     font-family: var(--font-display);
-    font-size: 1.9rem;
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
     margin-bottom: 4px;
   }
   .profile-hero .title {
-    color: var(--slate);
+    color: rgba(247,245,240,0.72);
     font-size: 1rem;
-    margin-bottom: var(--space-3);
+    margin-bottom: 12px;
   }
   .profile-meta-row {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-4);
+    gap: 14px 18px;
     font-family: var(--font-mono);
-    font-size: 0.88rem;
-    color: var(--slate);
-    margin-bottom: var(--space-4);
+    font-size: 0.82rem;
+    color: rgba(247,245,240,0.7);
   }
-  .profile-meta-row .stars { color: var(--amber-deep); }
-  .profile-meta-row .rate { color: var(--green); font-weight: 600; }
+  .profile-meta-row .stars { color: var(--amber); }
+  .profile-meta-row .rate { color: #7dcea0; font-weight: 600; }
   .profile-actions {
     display: flex;
-    gap: var(--space-3);
+    gap: 10px;
     flex-wrap: wrap;
     margin-left: auto;
     align-self: center;
   }
+  .profile-actions .btn-outline {
+    border-color: rgba(247,245,240,0.35);
+    color: var(--paper);
+  }
+  .profile-actions .btn-outline:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
 
   .profile-section {
-    padding: var(--space-4) var(--space-5);
+    padding: clamp(1.25rem, 3vw, 1.75rem);
     margin-bottom: var(--space-4);
+    border-radius: 16px;
   }
   .profile-section h2 {
     font-family: var(--font-display);
     font-size: 1.25rem;
-    margin-bottom: var(--space-3);
+    margin-bottom: 10px;
   }
   .profile-section p {
     color: var(--slate);
     font-size: 0.95rem;
-    line-height: 1.6;
+    line-height: 1.65;
   }
 
-  .skills-wrap {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+  .skills-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+  .skills-wrap .tag {
+    border-radius: 999px;
+    padding: 6px 12px;
   }
 
   .portfolio-grid {
@@ -87,7 +97,7 @@
   }
   .portfolio-item {
     aspect-ratio: 4/3;
-    border-radius: var(--radius);
+    border-radius: 12px;
     background: var(--ink);
     position: relative;
     overflow: hidden;
@@ -97,14 +107,14 @@
   .portfolio-item .overlay {
     background: linear-gradient(transparent, rgba(18,23,43,0.85));
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     color: var(--paper);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 
   .review-item {
     padding: var(--space-3) 0;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px dashed var(--border);
   }
   .review-item:last-child { border-bottom: none; padding-bottom: 0; }
   .review-item:first-child { padding-top: 0; }
@@ -115,19 +125,13 @@
     gap: var(--space-3);
     margin-bottom: 6px;
   }
-  .review-top h4 {
-    font-size: 0.95rem;
-    font-weight: 600;
-  }
+  .review-top h4 { font-size: 0.95rem; font-weight: 600; }
   .review-stars {
     font-family: var(--font-mono);
     font-size: 0.82rem;
     color: var(--amber-deep);
   }
-  .review-item p {
-    font-size: 0.9rem;
-    color: var(--slate);
-  }
+  .review-item p { font-size: 0.9rem; color: var(--slate); }
   .review-meta {
     font-family: var(--font-mono);
     font-size: 0.75rem;
@@ -135,11 +139,34 @@
     margin-top: 6px;
   }
 
-  @media (max-width: 720px) {
-    .profile-hero-top { flex-direction: column; }
-    .profile-actions { margin-left: 0; width: 100%; }
-    .profile-actions .btn { flex: 1; }
+  .profile-form { margin-top: var(--space-4); }
+  .profile-form .form-group { margin-bottom: var(--space-3); }
+  .profile-form label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .profile-form input,
+  .profile-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--paper);
+  }
+  .profile-form input:focus,
+  .profile-form textarea:focus { outline: none; border-color: var(--amber-deep); }
+  .profile-form-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .portfolio-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .message-box { margin-top: var(--space-3); }
+
+  @media (max-width: 900px) {
     .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+    .profile-actions { margin-left: 0; width: 100%; }
+  }
+  @media (max-width: 560px) {
+    .portfolio-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -148,109 +175,27 @@
 <nav class="navbar">
   <div class="container">
     <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
-    <ul class="nav-links">
-      <li><a href="find-talent.html">Find Talent</a></li>
-      <li><a href="freelancer-dashboard.html">Find Work</a></li>
-      <li><a href="messaging.html">Messages</a></li>
-    </ul>
-    <div class="nav-actions">
-      <a href="login.html" class="btn btn-ghost">Log Out</a>
-    </div>
+    <ul class="nav-links"></ul>
+    <div class="nav-actions"></div>
   </div>
 </nav>
 
-<div class="profile-page">
-
-  <div class="card profile-hero">
-    <div class="profile-hero-top">
-      <div class="avatar-lg">PN</div>
-      <div style="flex:1; min-width:200px;">
-        <h1>Priya Nair</h1>
-        <div class="title">Product Designer</div>
-        <div class="profile-meta-row">
-          <span><span class="stars">★★★★★</span> 4.9 (38 reviews)</span>
-          <span class="rate">$35/hr</span>
-          <span>Bengaluru, India</span>
-        </div>
-      </div>
-      <div class="profile-actions">
-        <a href="messaging.html" class="btn btn-primary">Send Message</a>
-        <a href="project-posting.html" class="btn btn-outline">Invite to Project</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="card profile-section">
-    <h2>About</h2>
-    <p>
-      Product designer with 6 years of experience across fintech and SaaS. I focus on clean, accessible
-      interfaces backed by research — from discovery workshops to polished Figma systems ready for engineering.
-      I’ve shipped onboarding flows, dashboards, and mobile UI kits for startups and mid-size product teams.
+<div class="dash-layout">
+  <aside class="sidebar" data-static-sidebar></aside>
+  <main class="dash-main">
+    <p style="margin-bottom:var(--space-3);">
+      <a href="find-talent.html">← Back to Find Talent</a>
     </p>
-  </div>
-
-  <div class="card profile-section">
-    <h2>Skills</h2>
-    <div class="skills-wrap">
-      <span class="tag">Figma</span>
-      <span class="tag">UI/UX</span>
-      <span class="tag">Prototyping</span>
-      <span class="tag">Design Systems</span>
-      <span class="tag">User Research</span>
-      <span class="tag">Accessibility</span>
-      <span class="tag">Mobile Design</span>
+    <div id="profileHero"></div>
+    <div id="profileBody">
+      <p style="color:var(--slate);">Loading profile…</p>
     </div>
-  </div>
-
-  <div class="card profile-section">
-    <h2>Portfolio</h2>
-    <div class="portfolio-grid">
-      <div class="portfolio-item"><div class="overlay">Fintech Onboarding Flow</div></div>
-      <div class="portfolio-item"><div class="overlay">Booking App Redesign</div></div>
-      <div class="portfolio-item"><div class="overlay">SaaS Dashboard UI</div></div>
-      <div class="portfolio-item"><div class="overlay">Savings App Mobile Kit</div></div>
-      <div class="portfolio-item"><div class="overlay">Design System — NovaPay</div></div>
-      <div class="portfolio-item"><div class="overlay">Marketplace Listing Screens</div></div>
-    </div>
-  </div>
-
-  <div class="card profile-section">
-    <h2>Reviews</h2>
-
-    <div class="review-item">
-      <div class="review-top">
-        <h4>Marcus Thorne</h4>
-        <span class="review-stars">★★★★★ 5.0</span>
-      </div>
-      <p>Priya transformed our onboarding in two weeks. Clear communication, sharp Figma files, and thoughtful edge cases.</p>
-      <div class="review-meta">Project: Redesign onboarding flow · Mar 2026</div>
-    </div>
-
-    <div class="review-item">
-      <div class="review-top">
-        <h4>Dana Kessler</h4>
-        <span class="review-stars">★★★★★ 5.0</span>
-      </div>
-      <p>Excellent UI kit for our fintech app. Accessibility notes were a huge help for the engineering handoff.</p>
-      <div class="review-meta">Project: Mobile app UI kit — fintech · Jan 2026</div>
-    </div>
-
-    <div class="review-item">
-      <div class="review-top">
-        <h4>NovaTech Inc.</h4>
-        <span class="review-stars">★★★★☆ 4.0</span>
-      </div>
-      <p>Solid work overall. Timeline slipped by a few days but the final dashboard screens exceeded expectations.</p>
-      <div class="review-meta">Project: Analytics SaaS dashboard · Nov 2025</div>
-    </div>
-  </div>
-
-  <p style="text-align:center; margin-top: var(--space-3);">
-    <a href="find-talent.html" class="btn btn-ghost">← Back to Find Talent</a>
-  </p>
+  </main>
 </div>
 
 <script src="../js/api.js"></script>
 <script src="../js/main.js"></script>
+<script src="../js/hire.js"></script>
+<script src="../js/freelancer-profile.js"></script>
 </body>
 </html>

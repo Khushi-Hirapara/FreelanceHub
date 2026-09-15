@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payments — FreelanceHub</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .dash-header { margin-bottom: var(--space-4); }
+  .dash-header h1 { font-family: var(--font-display); font-size: 1.9rem; margin-bottom: 4px; }
+  .dash-header p { color: var(--slate); }
+
+  .flow-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: var(--space-4);
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(247,245,240,0.65));
+  }
+  .flow-step .num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--amber-deep);
+    letter-spacing: 0.06em;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .flow-step strong { display: block; font-size: 0.9rem; margin-bottom: 2px; }
+  .flow-step span { color: var(--slate); font-size: 0.78rem; line-height: 1.35; }
+
+  .pay-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+  .pay-stat {
+    padding: var(--space-4);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--paper-raised);
+  }
+  .pay-stat .label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--slate-light);
+  }
+  .pay-stat .val {
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    margin-top: 6px;
+  }
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: var(--space-4);
+  }
+  .filter-chip {
+    padding: 8px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    background: var(--paper-raised);
+    color: var(--slate);
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .filter-chip.active {
+    border-color: var(--amber-deep);
+    background: rgba(232,163,61,0.12);
+    color: var(--ink);
+  }
+
+  .pay-list { display: grid; gap: 12px; }
+  .pay-card {
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--paper-raised);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .pay-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-raised);
+  }
+  .pay-card-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+  .pay-card h3 { font-family: var(--font-display); font-size: 1.05rem; }
+  .pay-card .meta { color: var(--slate); font-size: 0.86rem; margin-bottom: 10px; }
+  .pay-card-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--slate-light);
+  }
+  .pay-amount { font-family: var(--font-display); font-size: 1.2rem; color: var(--green); }
+  .status-pill {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+  .status-paid, .status-released { background: rgba(61,131,97,0.12); color: var(--green); }
+  .status-failed, .status-cancelled, .status-refunded { background: rgba(178,58,58,0.1); color: #B23A3A; }
+  .status-pending, .status-processing { background: rgba(232,163,61,0.15); color: var(--amber-deep); }
+
+  .empty-box {
+    padding: var(--space-5);
+    border: 1.5px dashed var(--border);
+    border-radius: 14px;
+    text-align: center;
+  }
+  .empty-box h3 { font-family: var(--font-display); margin-bottom: 8px; }
+  .empty-box p { color: var(--slate); margin-bottom: var(--space-4); max-width: 440px; margin-left: auto; margin-right: auto; }
+
+  @media (max-width: 900px) {
+    .flow-strip, .pay-stats { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .flow-strip, .pay-stats { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
+    <ul class="nav-links"></ul>
+    <div class="nav-actions"></div>
+  </div>
+</nav>
+<div class="dash-layout">
+  <aside class="sidebar" data-static-sidebar></aside>
+  <main class="dash-main">
+    <div class="dash-header">
+      <h1 id="pageTitle">Payments</h1>
+      <p id="pageSub">Fund first, release after approval. Track escrow and payout history here.</p>
+    </div>
+
+    <div class="flow-strip" aria-label="Payment journey">
+      <div class="flow-step"><span class="num">01</span><strong>Fund</strong><span>Client pays into escrow</span></div>
+      <div class="flow-step"><span class="num">02</span><strong>Hold</strong><span>Money waits while work happens</span></div>
+      <div class="flow-step"><span class="num">03</span><strong>Approve</strong><span>Client accepts delivery</span></div>
+      <div class="flow-step"><span class="num">04</span><strong>Release</strong><span>Freelancer gets paid</span></div>
+    </div>
+
+    <div class="pay-stats" id="payStats">
+      <div class="pay-stat"><div class="label" id="stat1Label">Pending</div><div class="val" id="statPending">—</div></div>
+      <div class="pay-stat"><div class="label" id="stat2Label">Paid / held</div><div class="val" id="statPaid">—</div></div>
+      <div class="pay-stat"><div class="label" id="stat3Label">Total volume</div><div class="val" id="statTotal">—</div></div>
+    </div>
+
+    <div class="filter-row" id="paymentFilters">
+      <button type="button" class="filter-chip active" data-filter="all">All</button>
+      <button type="button" class="filter-chip" data-filter="pending">Awaiting</button>
+      <button type="button" class="filter-chip" data-filter="paid">Paid</button>
+      <button type="button" class="filter-chip" data-filter="failed">Failed</button>
+    </div>
+
+    <div id="paymentList">
+      <p style="color:var(--slate);padding:12px;">Loading payments…</p>
+    </div>
+  </main>
+</div>
+<script src="../js/api.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/payments.js"></script>
+</body>
+</html>

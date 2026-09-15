@@ -6,83 +6,273 @@
 <title>My Profile — FreelanceHub</title>
 <link rel="stylesheet" href="../css/style.css">
 <style>
+  .profile-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background:
+      radial-gradient(900px 280px at 0% 0%, rgba(232,163,61,0.22), transparent 55%),
+      linear-gradient(135deg, #171d35 0%, var(--ink) 55%, #0f1424 100%);
+    color: var(--paper);
+    padding: clamp(1.5rem, 3vw, 2.2rem);
+    margin-bottom: var(--space-4);
+  }
+  .profile-hero-top {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .avatar-lg {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: var(--amber);
+    color: var(--ink);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    border: 3px solid rgba(255,255,255,0.18);
+  }
+  .profile-hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    margin-bottom: 4px;
+  }
+  .profile-hero .title {
+    color: rgba(247,245,240,0.72);
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+  .profile-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 18px;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: rgba(247,245,240,0.7);
+  }
+  .profile-meta-row .stars { color: var(--amber); }
+  .profile-meta-row .rate { color: #7dcea0; font-weight: 600; }
+  .profile-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-left: auto;
+    align-self: center;
+  }
+  .profile-actions .btn-outline {
+    border-color: rgba(247,245,240,0.35);
+    color: var(--paper);
+  }
+  .profile-actions .btn-outline:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .profile-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .profile-stats div {
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+  }
+  .profile-stats .label {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(247,245,240,0.5);
+  }
+  .profile-stats .val {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    margin-top: 4px;
+  }
+
   .profile-layout {
     display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: var(--space-5);
-    padding: var(--space-6) 0 var(--space-7);
-    align-items: start;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
   }
 
-  /* ---- Left: profile card ---- */
-  .profile-sticky { position: sticky; top: 96px; }
-  .profile-card { padding: var(--space-5); text-align: center; }
-  .avatar-lg {
-    width: 88px; height: 88px; border-radius: 50%;
-    background: var(--amber); color: var(--ink);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-display); font-size: 2rem; font-weight: 600;
-    margin: 0 auto var(--space-3);
+  .profile-tabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    margin-bottom: var(--space-4);
+    padding: 6px;
+    border-radius: 14px;
+    background: var(--paper-raised);
+    border: 1px solid var(--border);
   }
-  .profile-card h2 { font-family: var(--font-display); font-size: 1.3rem; margin-bottom: 4px; }
-  .profile-card .role-tag { font-family: var(--font-mono); font-size: 0.8rem; color: var(--slate); margin-bottom: var(--space-3); }
-  .profile-rating { display: flex; justify-content: center; gap: 4px; align-items: center; margin-bottom: var(--space-4); font-family: var(--font-mono); font-size: 0.9rem; }
-  .profile-rating .stars { color: var(--amber-deep); }
-
-  .profile-stats-mini { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); padding: var(--space-4) 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: var(--space-4); }
-  .profile-stats-mini div { text-align: center; }
-  .profile-stats-mini .val { font-family: var(--font-display); font-size: 1.3rem; }
-  .profile-stats-mini .label { font-size: 0.72rem; color: var(--slate-light); text-transform: uppercase; }
-
-  .upload-btn { width: 100%; margin-bottom: var(--space-2); }
-
-  /* ---- Right: tabbed edit sections ---- */
-  .profile-tabs { display: flex; gap: var(--space-2); margin-bottom: var(--space-4); border-bottom: 1px solid var(--border); }
   .profile-tab {
-    padding: 10px 4px; margin-right: var(--space-4);
-    font-size: 0.9rem; font-weight: 600; color: var(--slate-light);
-    border-bottom: 2px solid transparent;
+    flex: 0 0 auto;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--slate);
   }
-  .profile-tab.active { color: var(--ink); border-bottom-color: var(--amber); }
+  .profile-tab:hover { color: var(--ink); background: rgba(18,23,43,0.04); }
+  .profile-tab.active {
+    color: var(--ink);
+    background: rgba(232,163,61,0.16);
+  }
+  .profile-tab[hidden],
+  .role-only[hidden],
+  .tab-panel[hidden] { display: none !important; }
 
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
 
-  .form-card { padding: var(--space-5); }
-  .form-card h3 { font-family: var(--font-display); font-size: 1.2rem; margin-bottom: var(--space-4); }
-  .form-group { margin-bottom: var(--space-4); }
-  .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: var(--space-2); }
-  .form-group input, .form-group textarea, .form-group select {
-    width: 100%; padding: 11px 14px; border: 1.5px solid var(--border);
-    border-radius: var(--radius); font-size: 0.92rem; background: var(--paper-raised); font-family: inherit;
+  .form-card {
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+    border-radius: 16px;
   }
-  .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--amber-deep); }
-  .form-group textarea { resize: vertical; min-height: 100px; }
+  .form-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    margin-bottom: 6px;
+  }
+  .form-card .section-lead {
+    color: var(--slate);
+    font-size: 0.9rem;
+    margin-bottom: var(--space-4);
+  }
+  .form-group { margin-bottom: var(--space-4); }
+  .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+  }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.92rem;
+    background: var(--paper);
+    font-family: inherit;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: var(--amber-deep);
+  }
+  .form-group textarea { resize: vertical; min-height: 120px; }
   .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
 
-  .skill-input-wrap { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--paper-raised); }
-  .skill-input-wrap input { border: none; flex: 1; min-width: 120px; padding: 4px; font-size: 0.9rem; }
+  .skill-input-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--paper);
+  }
+  .skill-input-wrap input {
+    border: none;
+    flex: 1;
+    min-width: 120px;
+    padding: 4px;
+    font-size: 0.9rem;
+    background: transparent;
+  }
   .skill-input-wrap input:focus { outline: none; }
-  .skill-chip { display: flex; align-items: center; gap: 6px; background: rgba(232,163,61,0.12); color: var(--amber-deep); font-family: var(--font-mono); font-size: 0.8rem; padding: 4px 10px; border-radius: 4px; }
-  .skill-chip button { color: var(--amber-deep); font-weight: 700; font-size: 0.9rem; }
+  .skill-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(232,163,61,0.12);
+    color: var(--amber-deep);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    border-radius: 999px;
+  }
+  .skill-chip button { color: var(--amber-deep); font-weight: 700; }
 
-  /* Portfolio grid */
-  .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin-bottom: var(--space-4); }
-  .portfolio-item { aspect-ratio: 4/3; border-radius: var(--radius); background: var(--ink); position: relative; overflow: hidden; display: flex; align-items: flex-end; }
-  .portfolio-item .overlay { background: linear-gradient(transparent, rgba(18,23,43,0.85)); width: 100%; padding: 10px; color: var(--paper); font-size: 0.8rem; }
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+  .portfolio-item {
+    aspect-ratio: 4/3;
+    border-radius: 12px;
+    background: var(--ink);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+  }
+  .portfolio-item .overlay {
+    background: linear-gradient(transparent, rgba(18,23,43,0.85));
+    width: 100%;
+    padding: 12px;
+    color: var(--paper);
+    font-size: 0.85rem;
+  }
   .portfolio-add {
-    aspect-ratio: 4/3; border: 2px dashed var(--border); border-radius: var(--radius);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--slate-light); font-size: 1.8rem;
+    aspect-ratio: 4/3;
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    color: var(--slate-light);
+    font-size: 1.8rem;
+    background: var(--paper);
   }
 
-  .form-actions { display: flex; justify-content: flex-end; gap: var(--space-3); margin-top: var(--space-5); }
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  .review-item {
+    padding: 16px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .review-item:last-child { border-bottom: none; }
+  .review-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .review-top h4 { font-size: 0.98rem; }
+  .review-stars { color: var(--amber-deep); font-family: var(--font-mono); font-size: 0.85rem; }
+  .review-item p { color: var(--slate); font-size: 0.92rem; line-height: 1.5; }
+  .review-meta { color: var(--slate-light); font-size: 0.78rem; margin-top: 8px; font-family: var(--font-mono); }
 
   @media (max-width: 900px) {
-    .profile-layout { grid-template-columns: 1fr; }
-    .profile-sticky { position: static; }
+    .profile-stats { grid-template-columns: repeat(2, 1fr); }
     .form-2col { grid-template-columns: 1fr; }
     .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+    .profile-actions { margin-left: 0; width: 100%; }
+  }
+  @media (max-width: 560px) {
+    .profile-stats { grid-template-columns: 1fr 1fr; }
+    .portfolio-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -91,84 +281,86 @@
 <nav class="navbar">
   <div class="container">
     <a href="../index.html" class="nav-logo">Freelance<span>Hub</span></a>
-    <ul class="nav-links">
-      <li><a href="freelancer-dashboard.html">Find Work</a></li>
-      <li><a href="messaging.html">Messages</a></li>
-      <li><a href="profile.html" class="active">Profile</a></li>
-    </ul>
-    <div class="nav-actions">
-      <a href="login.html" class="btn btn-ghost">Log Out</a>
-    </div>
+    <ul class="nav-links"></ul>
+    <div class="nav-actions"></div>
   </div>
 </nav>
 
-<div class="container">
-  <div class="profile-layout">
-
-    <!-- Profile summary card -->
-    <div class="profile-sticky">
-      <div class="card profile-card">
-        <div class="avatar-lg">—</div>
-        <h2>Loading…</h2>
-        <div class="role-tag">Profile</div>
-        <div class="profile-rating"><span class="stars">★★★★★</span> —</div>
-
-        <div class="profile-stats-mini">
-          <div><div class="val">—</div><div class="label">Projects Done</div></div>
-          <div><div class="val">—</div><div class="label">On-time</div></div>
+<div class="dash-layout">
+  <aside class="sidebar" data-static-sidebar></aside>
+  <main class="dash-main">
+    <section class="profile-hero" id="profileHeroCard">
+      <div class="profile-hero-top">
+        <div class="avatar-lg" id="profileAvatar">—</div>
+        <div style="flex:1; min-width:220px;">
+          <h1 id="profileName">Loading…</h1>
+          <div class="title" id="profileTitle">Profile</div>
+          <div class="profile-meta-row" id="profileMeta">
+            <span><span class="stars">★★★★★</span> —</span>
+          </div>
         </div>
-
-        <button class="btn btn-outline upload-btn btn-sm" type="button" disabled>Change Photo</button>
-        <button class="btn btn-primary btn-sm" style="width:100%;" type="button" disabled>View Public Profile</button>
+        <div class="profile-actions role-only" data-roles="freelancer">
+          <a href="#" class="btn btn-outline btn-sm" id="viewPublicProfile">View public profile</a>
+        </div>
       </div>
-    </div>
+      <div class="profile-stats role-only" data-roles="freelancer" id="profileStats">
+        <div><div class="label">Projects done</div><div class="val" id="statDone">—</div></div>
+        <div><div class="label">On-time</div><div class="val" id="statOnTime">—</div></div>
+        <div><div class="label">Hourly rate</div><div class="val" id="statRate">—</div></div>
+        <div><div class="label">Reviews</div><div class="val" id="statReviews">—</div></div>
+      </div>
+    </section>
 
-    <!-- Editable sections -->
-    <div>
+    <div class="profile-layout">
       <div class="profile-tabs" id="profileTabs">
-        <div class="profile-tab active" data-tab="basic">Basic Info</div>
-        <div class="profile-tab" data-tab="skills">Skills & Bio</div>
-        <div class="profile-tab" data-tab="portfolio">Portfolio</div>
-        <div class="profile-tab" data-tab="security">Account & Security</div>
+        <button type="button" class="profile-tab active" data-tab="basic" data-roles="freelancer,client,admin">Basic Info</button>
+        <button type="button" class="profile-tab" data-tab="skills" data-roles="freelancer">Skills & Bio</button>
+        <button type="button" class="profile-tab" data-tab="portfolio" data-roles="freelancer">Portfolio</button>
+        <button type="button" class="profile-tab" data-tab="reviews" data-roles="freelancer">Reviews</button>
+        <button type="button" class="profile-tab" data-tab="security" data-roles="freelancer,client,admin">Security</button>
       </div>
 
-      <!-- Basic Info -->
       <div class="tab-panel active" id="tab-basic">
         <form class="card form-card">
-          <h3>Basic Information</h3>
+          <h3>Basic information</h3>
+          <p class="section-lead" id="basicLead">Update your account details.</p>
           <div class="form-2col">
             <div class="form-group">
               <label for="fullName">Full name</label>
-              <input type="text" id="fullName" value="" placeholder="Your full name">
+              <input type="text" id="fullName" placeholder="Your full name">
             </div>
             <div class="form-group">
               <label for="email">Email address</label>
-              <input type="email" id="email" value="" placeholder="you@example.com">
+              <input type="email" id="email" placeholder="you@example.com">
             </div>
           </div>
           <div class="form-2col">
+            <div class="form-group role-only" data-roles="freelancer,client" id="titleGroup">
+              <label for="title" id="titleLabel">Professional title</label>
+              <input type="text" id="title" placeholder="e.g. Full-stack developer">
+            </div>
             <div class="form-group">
               <label for="location">Location</label>
-              <input type="text" id="location" value="" placeholder="City, Country">
-            </div>
-            <div class="form-group">
-              <label for="hourlyRate">Hourly rate ($)</label>
-              <input type="number" id="hourlyRate" value="" placeholder="0">
+              <input type="text" id="location" placeholder="City, Country">
             </div>
           </div>
+          <div class="form-group role-only" data-roles="freelancer" style="max-width:240px;" id="hourlyRateGroup">
+            <label for="hourlyRate">Hourly rate ($)</label>
+            <input type="number" id="hourlyRate" placeholder="0" min="0" step="1">
+          </div>
           <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
           </div>
         </form>
       </div>
 
-      <!-- Skills & Bio -->
-      <div class="tab-panel" id="tab-skills">
+      <div class="tab-panel" id="tab-skills" data-roles="freelancer">
         <form class="card form-card">
-          <h3>Skills & Bio</h3>
+          <h3>Skills & bio</h3>
+          <p class="section-lead">A clear bio and strong skills help you get hired faster.</p>
           <div class="form-group">
             <label for="bio">About you</label>
-            <textarea id="bio" placeholder="Tell clients about your experience…"></textarea>
+            <textarea id="bio" placeholder="Tell clients about your experience, strengths, and the work you love…"></textarea>
           </div>
           <div class="form-group">
             <label>Skills</label>
@@ -177,26 +369,34 @@
             </div>
           </div>
           <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
           </div>
         </form>
       </div>
 
-      <!-- Portfolio -->
-      <div class="tab-panel" id="tab-portfolio">
+      <div class="tab-panel" id="tab-portfolio" data-roles="freelancer">
         <div class="card form-card">
-          <h3>Portfolio Showcase</h3>
+          <h3>Portfolio</h3>
+          <p class="section-lead">Showcase work that proves your skills.</p>
           <div class="portfolio-grid" id="portfolioGrid">
-            <div class="portfolio-add" title="Portfolio uploads coming soon">+</div>
+            <div class="portfolio-add" title="Add portfolio items from your public profile editor">+</div>
           </div>
-          <p style="color:var(--slate); font-size:0.85rem;">No portfolio items yet. Upload support will be added in a later release.</p>
+          <p style="color:var(--slate); font-size:0.88rem;">Add or edit portfolio pieces from your public profile page.</p>
         </div>
       </div>
 
-      <!-- Account & Security -->
+      <div class="tab-panel" id="tab-reviews" data-roles="freelancer">
+        <div class="card form-card">
+          <h3>Reviews <span id="reviewCount" style="color:var(--slate);font-size:0.9rem;font-weight:500;"></span></h3>
+          <p class="section-lead">Feedback from completed contracts.</p>
+          <div id="reviewList"><p style="color:var(--slate);">Loading reviews…</p></div>
+        </div>
+      </div>
+
       <div class="tab-panel" id="tab-security">
         <form class="card form-card">
-          <h3>Account & Security</h3>
+          <h3>Account & security</h3>
+          <p class="section-lead">Update your password to keep your account safe.</p>
           <div class="form-group">
             <label for="currentPassword">Current password</label>
             <input type="password" id="currentPassword" placeholder="••••••••">
@@ -212,12 +412,12 @@
             </div>
           </div>
           <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Update Password</button>
+            <button type="submit" class="btn btn-primary">Update password</button>
           </div>
         </form>
       </div>
     </div>
-  </div>
+  </main>
 </div>
 
 <script src="../js/api.js"></script>

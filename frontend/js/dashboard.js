@@ -45,9 +45,7 @@ function fillSidebar(user, role) {
   if (name) name.textContent = user.name;
   if (meta) {
     meta.textContent =
-      role === 'freelancer'
-        ? `Freelancer · ★ ${Number(user.rating_avg || 0).toFixed(1)}`
-        : `Client${user.title ? ` · ${user.title}` : ''}`;
+      role === 'freelancer' ? 'Freelancer' : role === 'admin' ? 'Admin' : 'Client';
   }
 }
 
@@ -103,8 +101,8 @@ async function loadFreelancerDashboard() {
     if (deltas[0]) deltas[0].textContent = `${summary.awaiting_reply || 0} awaiting reply`;
     if (vals[1]) vals[1].textContent = String(summary.active_contracts || 0);
     if (deltas[1]) deltas[1].textContent = summary.active_contracts ? 'Accepted proposals' : 'None yet';
-    if (vals[2]) vals[2].textContent = formatMoney(summary.earned || 0);
-    if (deltas[2]) deltas[2].textContent = 'From accepted bids';
+    if (vals[2]) vals[2].textContent = formatMoney(summary.paid_earnings || summary.earned || 0);
+    if (deltas[2]) deltas[2].textContent = `Pending ${formatMoney(summary.pending_earnings || 0)}`;
     if (vals[3]) vals[3].textContent = Number(summary.rating_avg || 0).toFixed(1);
     if (deltas[3]) deltas[3].textContent = `${summary.rating_count || 0} reviews`;
 
@@ -167,7 +165,9 @@ async function loadClientDashboard() {
     if (vals[1]) vals[1].textContent = String(summary.new_proposals || 0);
     if (deltas[1]) deltas[1].textContent = 'Pending review';
     if (vals[2]) vals[2].textContent = formatMoney(summary.total_spent || 0);
-    if (deltas[2]) deltas[2].textContent = 'Accepted bid total';
+    if (deltas[2]) {
+      deltas[2].textContent = `${summary.completed_payments || 0} completed · ${summary.pending_payments || 0} pending`;
+    }
     if (vals[3]) vals[3].textContent = Number(summary.rating_avg || 0).toFixed(1);
     if (deltas[3]) deltas[3].textContent = `${summary.rating_count || 0} reviews left`;
 
@@ -223,40 +223,129 @@ async function loadMyProposals() {
   if (!list) return;
   list.innerHTML = '<p style="color:var(--slate);padding:12px 0;">Loading your proposals…</p>';
 
+  let allProposals = [];
+  let activeFilter = 'all';
+
   try {
-    const proposals = await api('/proposals/mine');
-    const sub = document.querySelector('.dash-header p');
-    if (sub) {
-      sub.textContent =
-        proposals.length === 0
-          ? 'You haven’t submitted any proposals yet.'
-          : `${proposals.length} proposal${proposals.length === 1 ? '' : 's'} submitted.`;
-    }
-    if (!proposals.length) {
-      list.innerHTML =
-        '<p style="color:var(--slate);padding:12px 0;">No proposals yet. <a href="freelancer-dashboard.html">Browse projects</a> to submit your first bid.</p>';
-      return;
-    }
-    list.innerHTML = proposals.map(renderProposalCard).join('');
+    allProposals = await api('/proposals/mine');
+    updateProposalStats(allProposals);
+    renderProposalList();
   } catch (err) {
     list.innerHTML = `<p style="color:#B23A3A;padding:12px 0;">${escapeHtml(err.message)}</p>`;
+  }
+
+  document.querySelectorAll('#proposalFilters [data-filter]').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#proposalFilters [data-filter]').forEach((c) => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeFilter = chip.dataset.filter || 'all';
+      renderProposalList();
+    });
+  });
+
+  function updateProposalStats(proposals) {
+    const stats = document.getElementById('proposalStats');
+    const filters = document.getElementById('proposalFilters');
+    const sub = document.getElementById('proposalsSub') || document.querySelector('.dash-header p');
+    if (!proposals.length) {
+      if (stats) stats.hidden = true;
+      if (filters) filters.hidden = true;
+      if (sub) sub.textContent = 'You haven’t submitted any proposals yet.';
+      return;
+    }
+    if (stats) stats.hidden = false;
+    if (filters) filters.hidden = false;
+    const pending = proposals.filter((p) => p.status === 'pending').length;
+    const accepted = proposals.filter((p) => p.status === 'accepted').length;
+    const rejected = proposals.filter((p) => p.status === 'rejected' || p.status === 'withdrawn').length;
+    setText('statTotal', String(proposals.length));
+    setText('statPending', String(pending));
+    setText('statAccepted', String(accepted));
+    setText('statRejected', String(rejected));
+    if (sub) {
+      sub.textContent = `${proposals.length} proposal${proposals.length === 1 ? '' : 's'} · ${pending} waiting on clients`;
+    }
+  }
+
+  function renderProposalList() {
+    const filtered =
+      activeFilter === 'all'
+        ? allProposals
+        : activeFilter === 'rejected'
+          ? allProposals.filter((p) => p.status === 'rejected' || p.status === 'withdrawn')
+          : allProposals.filter((p) => p.status === activeFilter);
+
+    if (!allProposals.length) {
+      list.innerHTML = `
+        <div class="empty-box">
+          <h3>No proposals yet</h3>
+          <p>Browse open briefs, submit a strong cover letter and bid, then track everything here.</p>
+          <a href="freelancer-dashboard.html" class="btn btn-primary">Browse projects</a>
+        </div>
+      `;
+      return;
+    }
+
+    if (!filtered.length) {
+      list.innerHTML = '<p style="color:var(--slate);padding:12px 0;">No proposals in this filter.</p>';
+      return;
+    }
+
+    list.innerHTML = `<div class="prop-list">${filtered.map(renderProposalCard).join('')}</div>`;
   }
 }
 
 function renderProposalCard(proposal) {
   const title = proposal.project?.title || `Project #${proposal.project_id}`;
   const status = proposal.status || 'pending';
+  const category = proposal.project?.category || 'Project';
+  const letter = proposal.cover_letter || '';
+  const preview = letter.length > 160 ? `${letter.slice(0, 160)}…` : letter;
+  const projectHref = proposal.project_id
+    ? `project-detail.html?id=${proposal.project_id}`
+    : 'freelancer-dashboard.html';
+  const contractHref = proposal.contract_id
+    ? `contract-detail.html?id=${proposal.contract_id}`
+    : null;
+
+  let nextHint = 'Waiting for the client to review your bid.';
+  if (status === 'accepted') nextHint = 'Proposal accepted — open the contract to continue.';
+  if (status === 'rejected') nextHint = 'Not selected this time. Keep bidding on other briefs.';
+  if (status === 'withdrawn') nextHint = 'You withdrew this proposal.';
+
   return `
-    <div class="card proposal-item">
+    <article class="proposal-item">
       <div class="proposal-top">
-        <h3>${escapeHtml(title)}</h3>
-        <span class="status-badge status-${escapeHtml(status)}">${escapeHtml(status)}</span>
+        <div>
+          <div class="proposal-cat">${escapeHtml(category)}</div>
+          <h3>${escapeHtml(title)}</h3>
+        </div>
+        <span class="status-badge status-${escapeHtml(status)}">${escapeHtml(statusLabel(status))}</span>
       </div>
-      <p class="proposal-meta">${escapeHtml((proposal.cover_letter || '').slice(0, 140))}${(proposal.cover_letter || '').length > 140 ? '…' : ''}</p>
+      <p class="proposal-letter">${escapeHtml(preview || 'No cover letter provided.')}</p>
+      <div class="proposal-metrics">
+        <div class="bid"><span>Your bid</span><strong>${formatMoney(proposal.bid_amount)}</strong></div>
+        <div><span>Timeline</span><strong>${escapeHtml(proposal.estimated_duration || 'Flexible')}</strong></div>
+        <div><span>Next</span><strong style="font-size:0.88rem;font-weight:500;">${escapeHtml(nextHint)}</strong></div>
+      </div>
       <div class="proposal-foot">
-        <span>Bid ${formatMoney(proposal.bid_amount)} · ${escapeHtml(proposal.estimated_duration || 'Flexible')}</span>
-        <span>Submitted ${timeAgo(proposal.created_at)}</span>
+        <span class="when">Submitted ${escapeHtml(timeAgo(proposal.created_at))}</span>
+        <div class="proposal-ctas">
+          <a class="btn btn-outline btn-sm" href="${projectHref}">View project</a>
+          ${
+            contractHref
+              ? `<a class="btn btn-primary btn-sm" href="${contractHref}">View contract</a>`
+              : status === 'pending'
+                ? `<a class="btn btn-ghost btn-sm" href="${projectHref}">Follow up</a>`
+                : ''
+          }
+        </div>
       </div>
-    </div>
+    </article>
   `;
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
 }
